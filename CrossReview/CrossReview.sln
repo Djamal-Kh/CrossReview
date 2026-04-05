@@ -1,12 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Web", "CrossReview.Web\CrossReview.Web.csproj", "{9318130D-0993-47E0-94E8-AAFA18A25711}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Web", "src\CrossReview.Web\CrossReview.Web.csproj", "{9318130D-0993-47E0-94E8-AAFA18A25711}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Domain", "CrossReview.Domain\CrossReview.Domain.csproj", "{9461D175-469E-4026-88F4-C582077FF7E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Domain", "src\CrossReview.Domain\CrossReview.Domain.csproj", "{9461D175-469E-4026-88F4-C582077FF7E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Application", "CrossReview.Application\CrossReview.Application.csproj", "{79F58C6E-6A19-4DB1-96EB-4500D802037A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Application", "src\CrossReview.Application\CrossReview.Application.csproj", "{79F58C6E-6A19-4DB1-96EB-4500D802037A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Infrastructure.Postgres", "CrossReview.Infrastructure.Postgres\CrossReview.Infrastructure.Postgres.csproj", "{7855DEE0-C921-46EA-974A-3025FE17D475}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossReview.Infrastructure.Postgres", "src\CrossReview.Infrastructure.Postgres\CrossReview.Infrastructure.Postgres.csproj", "{7855DEE0-C921-46EA-974A-3025FE17D475}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F7D54FE0-8361-48F3-913C-D4DA2DDBC489}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +32,11 @@ Global
 		{7855DEE0-C921-46EA-974A-3025FE17D475}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7855DEE0-C921-46EA-974A-3025FE17D475}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7855DEE0-C921-46EA-974A-3025FE17D475}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{79F58C6E-6A19-4DB1-96EB-4500D802037A} = {F7D54FE0-8361-48F3-913C-D4DA2DDBC489}
+		{9461D175-469E-4026-88F4-C582077FF7E1} = {F7D54FE0-8361-48F3-913C-D4DA2DDBC489}
+		{7855DEE0-C921-46EA-974A-3025FE17D475} = {F7D54FE0-8361-48F3-913C-D4DA2DDBC489}
+		{9318130D-0993-47E0-94E8-AAFA18A25711} = {F7D54FE0-8361-48F3-913C-D4DA2DDBC489}
 	EndGlobalSection
 EndGlobal
