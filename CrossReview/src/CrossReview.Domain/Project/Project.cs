@@ -11,5 +11,4 @@ public class Project
     public string? Description { get; set; } = string.Empty;
     public List<ProjectMember> Members { get; set; } = [];
     public List<ReviewPeriod> Period { get; set; }
-    // нужна ли связь с Review ? 
 }

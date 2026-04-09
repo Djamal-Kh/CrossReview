@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>CrossReview</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CrossReview.Application\CrossReview.Application.csproj" />
+      <ProjectReference Include="..\CrossReview.Infrastructure.Postgres\CrossReview.Infrastructure.Postgres.csproj" />
+    </ItemGroup>
+
+</Project>
