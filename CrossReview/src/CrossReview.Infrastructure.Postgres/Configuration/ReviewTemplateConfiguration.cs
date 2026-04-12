@@ -1,4 +1,5 @@
 ﻿using CrossReview.Domain.Review;
+using CrossReview.Domain.Template;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

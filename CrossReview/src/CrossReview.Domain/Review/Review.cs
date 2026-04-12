@@ -1,14 +1,32 @@
-﻿using CrossReview.Domain.Review.ValueObjects;
-
-namespace CrossReview.Domain.Review;
+﻿namespace CrossReview.Domain.Review;
 
 public class Review
 {
-    public Guid Id { get; set; }
-    public Guid ReviewerId { get; set; } // ссылка на id ProjectMember ?
-    public Guid RevieweeId { get; set; } // ссылка на id ProjectMember >
-    public Guid ProjectId { get; set; }
-    public Guid TemplateId { get; set; }
-    public List<ReviewAnswer> Answers { get; set; }
-    public Guid PeriodId { get; set; } // ссылка на ReviewPeriod
+    private List<ReviewAnswer> _answers;
+
+    public Review(
+        Guid id, 
+        Guid reviewerId, 
+        Guid revieweeId, 
+        Guid projectId, 
+        Guid templateId, 
+        IEnumerable<ReviewAnswer> answers, 
+        Guid periodId)
+    {
+        Id = id;
+        ReviewerId = reviewerId;
+        RevieweeId = revieweeId;
+        ProjectId = projectId;
+        TemplateId = templateId;
+        _answers = answers.ToList();
+        PeriodId = periodId;
+    }
+    
+    public Guid Id { get; }
+    public Guid ReviewerId { get; } 
+    public Guid RevieweeId { get; } 
+    public Guid ProjectId { get; }
+    public Guid TemplateId { get; }
+    public IReadOnlyList<ReviewAnswer> Answers => _answers;
+    public Guid PeriodId { get; } 
 }

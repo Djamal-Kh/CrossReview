@@ -1,4 +1,4 @@
-﻿namespace CrossReview.Domain.Review.ValueObjects;
+﻿namespace CrossReview.Domain.Project;
 
 public enum EnumReviewPeriodStatus
 {

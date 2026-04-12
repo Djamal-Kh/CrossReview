@@ -1,4 +1,4 @@
-﻿using CrossReview.Domain.Project.ValueObjects;
+﻿using CrossReview.Domain.Project;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

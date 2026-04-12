@@ -1,7 +1,6 @@
 ﻿using CrossReview.Domain.Project;
-using CrossReview.Domain.Project.ValueObjects;
 using CrossReview.Domain.Review;
-using CrossReview.Domain.Review.ValueObjects;
+using CrossReview.Domain.Template;
 using CrossReview.Domain.User;
 using Microsoft.EntityFrameworkCore;
 
