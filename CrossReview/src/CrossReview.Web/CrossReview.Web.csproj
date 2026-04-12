@@ -12,7 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
+      <ProjectReference Include="..\CrossReview.Application\CrossReview.Application.csproj" />
+      <ProjectReference Include="..\CrossReview.Infrastructure.Postgres\CrossReview.Infrastructure.Postgres.csproj" />
     </ItemGroup>
 
 </Project>

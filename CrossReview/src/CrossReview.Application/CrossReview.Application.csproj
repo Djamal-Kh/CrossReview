@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CrossReview.Domain\CrossReview.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
