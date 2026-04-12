@@ -26,7 +26,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired();
 
         builder
-            .Property(p => p.IsActive)
+            .Property(p => p.Status)
             .HasColumnName("is_active")
             .IsRequired();
         
