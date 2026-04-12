@@ -27,7 +27,7 @@ public class CrossReviewDbContext(DbContextOptions<CrossReviewDbContext> options
     
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ReviewTemplate> ReviewTemplates { get; set; }
-    public DbSet<ReviewAnswer> ReviewAnswers { get; set; } // Надо ?
-    public DbSet<ReviewQuestion> ReviewQuestions { get; set; } // Надо ?
+    public DbSet<ReviewAnswer> ReviewAnswers { get; set; } 
+    public DbSet<ReviewQuestion> ReviewQuestions { get; set; } 
     public DbSet<EvaluationResult> EvaluationResults { get; set; }
 }

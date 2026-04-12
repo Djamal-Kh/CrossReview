@@ -1,6 +1,29 @@
-﻿namespace CrossReview.EvaluationResult;
+﻿using Microsoft.AspNetCore.Mvc;
 
-public class EvaluationResultController
+namespace CrossReview.EvaluationResult;
+
+public class EvaluationResultController : ControllerBase
 {
-    
+    public EvaluationResultController()
+    {
+        
+    }
+
+    [HttpPost]
+    public async Task Create()
+    {
+        
+    }
+
+    [HttpGet("projectMemberId")]
+    public async Task Get()
+    {
+        
+    }
+
+    [HttpGet]
+    public async Task GetAll()
+    {
+        
+    }
 }

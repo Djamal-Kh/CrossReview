@@ -1,6 +1,29 @@
-﻿namespace CrossReview.Identity;
+﻿using Microsoft.AspNetCore.Mvc;
 
-public class IdentityController
+namespace CrossReview.Identity;
+
+public class IdentityController : ControllerBase
 {
-    
+    public IdentityController()
+    {
+        
+    }
+
+    [HttpPost]
+    public async Task Login()
+    {
+        
+    }
+
+    [HttpPost]
+    public async Task Register()
+    {
+        
+    }
+
+    [HttpPost]
+    public async Task Refresh()
+    {
+        
+    }
 }
