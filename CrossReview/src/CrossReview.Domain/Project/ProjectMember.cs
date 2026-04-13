@@ -16,7 +16,7 @@ public class ProjectMember
         LeftAt = null;
     }
     
-    public Guid UserId { get; private set; }
+    public Guid UserId { get; }
     public EnumProjectRole Role { get; private set; }
     public bool IsActive {get; private set;}
     public DateTime JoinedAt { get; private set; } 

@@ -12,7 +12,7 @@ public class Project
         string title, 
         string description)
     {
-        CreateValidator(title);
+        Validate(title);
         
         Id = id;
         Title = title;
@@ -22,7 +22,7 @@ public class Project
         _periods = [];
     }
     
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
     public string Title { get; private set; }
     public bool Status { get; private set; }
     public string? Description { get; private set; }
@@ -30,7 +30,7 @@ public class Project
     public IReadOnlyCollection<ReviewPeriod> Periods => _periods;
 
 
-    public void CreateValidator(string title)
+    public void Validate(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ValidationException($"Поле {Title} не может быть пустым");

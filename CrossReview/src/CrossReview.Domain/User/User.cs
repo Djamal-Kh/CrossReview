@@ -12,7 +12,7 @@ public class User
         string phoneNumber, 
         EnumUserRole role = EnumUserRole.User)
     {
-        CreateValidator(firstName, lastName, email, phoneNumber);
+        Validate(firstName, lastName, email, phoneNumber);
         
         Id = id;
         FirstName = firstName;
@@ -22,7 +22,7 @@ public class User
         Role = role;
     }
     
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string Email { get; private set; }
@@ -61,7 +61,7 @@ public class User
         Email = email;
     }
 
-    private void CreateValidator(
+    private void Validate(
         string firstName,
         string lastName,
         string email, 
@@ -78,6 +78,5 @@ public class User
 
         if (string.IsNullOrWhiteSpace(email))
             throw new ValidationException($"Поле {nameof(Email)} не может быть пустым");
-
     }
 }

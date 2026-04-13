@@ -10,7 +10,7 @@ public class ReviewPeriod
         DateTime endDate, 
         EnumReviewPeriodStatus status = EnumReviewPeriodStatus.Draft)
     {
-        CreateValidator(id, startDate, endDate);
+        Validate(id, startDate, endDate);
         
         Id = id;
         StartDate = startDate;
@@ -23,7 +23,7 @@ public class ReviewPeriod
     public DateTime EndDate { get; private set; }
     public EnumReviewPeriodStatus Status { get; private set; }
 
-    private void CreateValidator(Guid id, DateTime startDate, DateTime endDate)
+    private void Validate(Guid id, DateTime startDate, DateTime endDate)
     {
         if (id == Guid.Empty)
             throw new ValidationException($"Поле {nameof(Id)} не должно быть пустым");
