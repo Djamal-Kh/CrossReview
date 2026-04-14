@@ -4,7 +4,7 @@ namespace CrossReview.Domain.Project;
 
 public class ProjectMember
 {
-    public ProjectMember(Guid userId, EnumProjectRole role)
+    private ProjectMember(Guid userId, EnumProjectRole role)
     {
         if (userId == Guid.Empty)
             throw new ValidationException($"Поле {UserId} не может быть пустым");
@@ -22,6 +22,11 @@ public class ProjectMember
     public DateTime JoinedAt { get; private set; } 
     public DateTime? LeftAt { get; private set; }
 
+    public static ProjectMember Create(EnumProjectRole role)
+    {
+        return new ProjectMember(Guid.NewGuid(), role);
+    }
+    
     public void ChangeRole(EnumProjectRole newRole)
     {
         if (Role == newRole)

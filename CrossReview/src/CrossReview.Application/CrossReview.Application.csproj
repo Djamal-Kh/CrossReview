@@ -8,6 +8,33 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CrossReview.Domain\CrossReview.Domain.csproj" />
+      <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Project\DTOs\" />
+      <Folder Include="Project\UseCases\GetProjectById\" />
+      <Folder Include="Project\UseCases\GetProjectMemberById\" />
+      <Folder Include="Project\UseCases\GetProjectMembers\" />
+      <Folder Include="Project\UseCases\StartProject\" />
+      <Folder Include="Project\UseCases\DeactivateEmployee\" />
+      <Folder Include="Project\UseCases\CloseProject\" />
+      <Folder Include="Project\UseCases\RemoveEmployee\" />
+      <Folder Include="Project\UseCases\UpdateProjectDescription\" />
+      <Folder Include="Project\UseCases\UpdateProjectTitle\" />
+      <Folder Include="Review\DTOs\" />
+      <Folder Include="Review\UseCases\" />
+      <Folder Include="Template\DTOs\" />
+      <Folder Include="Template\UseCases\" />
+      <Folder Include="User\DTO\" />
+      <Folder Include="User\UseCases\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
+      <PackageReference Include="FluentValidation" Version="12.1.1" />
+      <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     </ItemGroup>
 
 </Project>

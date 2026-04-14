@@ -2,14 +2,14 @@
 
 namespace CrossReview.Domain.Template;
 
-public class ReviewTemplate
+public class ReviewTemplateEntity
 {
     private List<ReviewQuestion> _questions;
     
     private const int MaxTitleLenght = 300;
     private const int MinTitleLenght = 10;
     
-    public ReviewTemplate(
+    public ReviewTemplateEntity(
         Guid id, 
         string title, 
         IEnumerable<ReviewQuestion> questions, 

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrossReview.Infrastructure.Postgres.Configuration;
 
-public class ProjectConfiguration : IEntityTypeConfiguration<Project>
+public class ProjectConfiguration : IEntityTypeConfiguration<ProjectEntity>
 {
-    public void Configure(EntityTypeBuilder<Project> builder)
+    public void Configure(EntityTypeBuilder<ProjectEntity> builder)
     {
         builder.ToTable("projects");
         

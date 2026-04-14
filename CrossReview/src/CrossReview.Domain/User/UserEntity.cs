@@ -2,9 +2,9 @@
 
 namespace CrossReview.Domain.User;
 
-public class User
+public class UserEntity
 {
-    public User(
+    public UserEntity(
         Guid id, 
         string firstName,
         string lastName,

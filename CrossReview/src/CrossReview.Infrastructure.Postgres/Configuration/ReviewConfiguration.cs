@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrossReview.Infrastructure.Postgres.Configuration;
 
-public class ReviewConfiguration : IEntityTypeConfiguration<Review>
+public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
 {
-    public void Configure(EntityTypeBuilder<Review> builder)
+    public void Configure(EntityTypeBuilder<ReviewEntity> builder)
     {
         builder.ToTable("reviews");
         

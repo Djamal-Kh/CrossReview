@@ -4,7 +4,7 @@ namespace CrossReview.Domain.Project;
 
 public class ReviewPeriod
 {
-    public ReviewPeriod(
+    private ReviewPeriod(
         Guid id, 
         DateTime startDate,
         DateTime endDate, 
@@ -23,17 +23,9 @@ public class ReviewPeriod
     public DateTime EndDate { get; private set; }
     public EnumReviewPeriodStatus Status { get; private set; }
 
-    private void Validate(Guid id, DateTime startDate, DateTime endDate)
+    public static ReviewPeriod Create(DateTime startDate, DateTime endDate)
     {
-        if (id == Guid.Empty)
-            throw new ValidationException($"Поле {nameof(Id)} не должно быть пустым");
-
-        if (startDate == default || endDate == default)
-            throw new ValidationException("Дата не инициализирована");
-        
-        if (startDate >= endDate)
-            throw new ValidationException(
-                $"Значение поля {nameof(startDate)} не может быть позже или равно полю {nameof(endDate)}");
+        return new ReviewPeriod(Guid.NewGuid(), startDate, endDate);
     }
     
     public bool IsActiveNow()
@@ -112,5 +104,14 @@ public class ReviewPeriod
         
         StartDate = startDate;
         EndDate = endDate;
+    }
+    
+    private void Validate(Guid id, DateTime startDate, DateTime endDate)
+    {
+        if (id == Guid.Empty)
+            throw new ValidationException($"Поле {nameof(Id)} не должно быть пустым");
+
+        if (startDate == default || endDate == default)
+            throw new ValidationException("Дата не инициализирована");
     }
 }

@@ -25,7 +25,7 @@ public class EvaluationResult
     public int FinalScore { get; private set; }
     public DateTime CalculatedAt { get; private set; }
 
-    public void Calculate(IEnumerable<Review> reviews)
+    public void Calculate(IEnumerable<ReviewEntity> reviews)
     {
         if (!reviews.Any())
             throw new ValidationException("Не найдено ни одного ревью");
@@ -45,7 +45,7 @@ public class EvaluationResult
         CalculatedAt = DateTime.UtcNow;
     }
 
-    public void Recalculate(IEnumerable<Review> reviews)
+    public void Recalculate(IEnumerable<ReviewEntity> reviews)
     {
         if (CalculatedAt == default)
             throw new ValidationException("Ревью не были ни разу подсчитаны");

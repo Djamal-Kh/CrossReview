@@ -2,11 +2,11 @@
 
 namespace CrossReview.Domain.Review;
 
-public class Review
+public class ReviewEntity
 {
     private List<ReviewAnswer> _answers;
 
-    public Review(
+    public ReviewEntity(
         Guid id, 
         Guid reviewerId, 
         Guid revieweeId, 
