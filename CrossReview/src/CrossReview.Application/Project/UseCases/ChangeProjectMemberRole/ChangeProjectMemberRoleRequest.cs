@@ -2,4 +2,4 @@
 
 namespace CrossReview.Application.Project.UseCases.ChangeEmployeeRole;
 
-public record ChangeEmployeeRoleRequest(Guid UserId, EnumProjectRole Role, Guid ProjectId);
+public record ChangeProjectMemberRoleRequest(Guid UserId, EnumProjectRole Role, Guid ProjectId);

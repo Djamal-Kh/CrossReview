@@ -1,6 +1,11 @@
-﻿namespace CrossReview.Application.Project.UseCases.DeleteProject;
+﻿using FluentValidation;
 
-public class DeleteProjectValidator
+namespace CrossReview.Application.Project.UseCases.DeleteProject;
+
+public class DeleteProjectValidator : AbstractValidator<DeleteProjectRequest>
 {
-    
+    public DeleteProjectValidator()
+    {
+        
+    }
 }

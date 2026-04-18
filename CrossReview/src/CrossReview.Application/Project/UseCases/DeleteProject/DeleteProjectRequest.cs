@@ -1,3 +1,3 @@
 ﻿namespace CrossReview.Application.Project.UseCases.DeleteProject;
 
-public record DeleteProjectRequest();
+public record DeleteProjectRequest(Guid ProjectId);

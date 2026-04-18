@@ -4,17 +4,17 @@ using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.UpdateProjectData;
+namespace CrossReview.Application.Project.UseCases.UpdateProjectTitle;
 
-public class UpdateProjectUseCase
+public class UpdateProjectTitleUseCase
 {
-    private readonly ILogger<UpdateProjectUseCase> _logger;
-    private readonly IValidator<UpdateProjectRequest> _validator;
+    private readonly ILogger<UpdateProjectTitleUseCase> _logger;
+    private readonly IValidator<UpdateProjectTitleRequest> _validator;
     private readonly IProjectRepository _repository;
-    
-    public UpdateProjectUseCase(
-        ILogger<UpdateProjectUseCase> logger, 
-        IValidator<UpdateProjectRequest> validator,
+
+    public UpdateProjectTitleUseCase(
+        ILogger<UpdateProjectTitleUseCase> logger,
+        IValidator<UpdateProjectTitleRequest> validator, 
         IProjectRepository repository)
     {
         _logger = logger;
@@ -22,7 +22,8 @@ public class UpdateProjectUseCase
         _repository = repository;
     }
 
-    public async Task<Result<Guid, Errors>> Execute(UpdateProjectRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Execute(UpdateProjectTitleRequest request,
+        CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         
@@ -34,9 +35,11 @@ public class UpdateProjectUseCase
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
         
-        project.UpdateData(request.Title, request.Description);
+        project.UpdateTitle(request.Title);
         
-        _logger.LogInformation("Data of project {ProjectId} was updated", project.Id);
+        await _repository.SaveAsync(project, cancellationToken);
+        
+        _logger.LogInformation("Title of project {ProjectId} was updated", project.Id);
 
         return project.Id;
     }

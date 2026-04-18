@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CSharpFunctionalExtensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Domain.Project;
 
@@ -32,18 +34,20 @@ public class ProjectEntity
         return new ProjectEntity(Guid.NewGuid(), title, description);
     }
     
-    public void ToActivate()
+    public UnitResult<Errors> ToActivate()
     {
         if (Status)
-            return; // как-нибудь сообщить что статус и так уже true ?
+            return GeneralErrors.ValueIsInvalid().ToErrors();// как-нибудь сообщить что статус и так уже true ?
 
         if (!_members.Any())
-            throw new ValidationException("Перед тем как сделать статус активным добавьте к проекту сотрудников");
+            return GeneralErrors.CollectionEmpty().ToErrors();
 
         if (!_periods.Any())
-            throw new ValidationException("Перед тем как сделать статус активным добавьте к проекту период ревью");
+            return  GeneralErrors.CollectionEmpty().ToErrors();
         
         Status = true;
+
+        return UnitResult.Success<Errors>();
     }
 
     public void ToDeactivate()
@@ -99,25 +103,29 @@ public class ProjectEntity
         return member.UserId;
     }
 
-    public void RemoveEmployeeFromProject(Guid userId)
+    public UnitResult<Error> RemoveEmployeeFromProject(Guid userId)
     {
         ProjectMember member = _members.Find(m => m.UserId == userId);
 
         if (member is null)
-            throw new ValidationException("Такого пользователя нет");
+            return GeneralErrors.NotFound(userId);
         
         member.LeaveTheProject();
         _members.Remove(member);
+        
+        return UnitResult.Success<Error>();
     }
 
-    public void DeactivateEmployeeInProject(Guid userId)
+    public UnitResult<Error> DeactivateEmployeeInProject(Guid userId)
     {
         ProjectMember member = _members.Find(m => m.UserId == userId);
-        
+
         if (member is null)
-            throw new ValidationException("Такого пользователя нет");
+            return GeneralErrors.NotFound(userId);
         
         member.StopActivity();
+
+        return UnitResult.Success<Error>();
     }
 
     public void ChangeEmployeeRole(Guid projectMemberId, EnumProjectRole newRole)

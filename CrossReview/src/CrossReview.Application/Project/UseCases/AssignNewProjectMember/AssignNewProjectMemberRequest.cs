@@ -2,4 +2,4 @@
 
 namespace CrossReview.Application.Project.UseCases.AssignEmployee;
 
-public record AssignNewEmployeeRequest(Guid UserId, EnumProjectRole Role, Guid ProjectId);
+public record AssignNewProjectMemberRequest(Guid UserId, EnumProjectRole Role, Guid ProjectId);

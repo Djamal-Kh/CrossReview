@@ -6,23 +6,23 @@ using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Project.UseCases.ChangeEmployeeRole;
 
-public class ChangeEmployeeRoleUseCase
+public class ChangeProjectMemberRoleUseCase
 {
-    private readonly ILogger<ChangeEmployeeRoleUseCase> _logger;
+    private readonly ILogger<ChangeProjectMemberRoleUseCase> _logger;
     private readonly IProjectRepository _repository;
-    private readonly IValidator<ChangeEmployeeRoleRequest> _validator;
+    private readonly IValidator<ChangeProjectMemberRoleRequest> _validator;
 
-    public ChangeEmployeeRoleUseCase(
-        ILogger<ChangeEmployeeRoleUseCase> logger, 
+    public ChangeProjectMemberRoleUseCase(
+        ILogger<ChangeProjectMemberRoleUseCase> logger, 
         IProjectRepository repository, 
-        IValidator<ChangeEmployeeRoleRequest> validator)
+        IValidator<ChangeProjectMemberRoleRequest> validator)
     {
         _logger = logger;
         _repository = repository;
         _validator = validator;
     }
 
-    public async Task<Result<Guid, Errors>> Execute(ChangeEmployeeRoleRequest request,
+    public async Task<Result<Guid, Errors>> Execute(ChangeProjectMemberRoleRequest request,
         CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
@@ -35,16 +35,16 @@ public class ChangeEmployeeRoleUseCase
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
 
-        var employeeId = project.AssignEmployeeToProject(request.UserId, request.Role);
+        var memberId = project.AssignEmployeeToProject(request.UserId, request.Role);
 
         await _repository.SaveAsync(project, cancellationToken);
         
         _logger.LogInformation(
             "Employee with UserId {UserId} was assign to Project with Id {ProjectId} and his Role: {Role}",
-            employeeId,
+            memberId,
             request.ProjectId,
             request.Role);
         
-        return employeeId;
+        return memberId;
     }
 }

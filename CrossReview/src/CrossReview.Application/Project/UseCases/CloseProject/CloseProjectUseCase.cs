@@ -1,20 +1,21 @@
-﻿using CSharpFunctionalExtensions;
+﻿using CrossReview.Domain.Project;
+using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.UpdateProjectData;
+namespace CrossReview.Application.Project.UseCases.CloseProject;
 
-public class UpdateProjectUseCase
+public class CloseProjectUseCase
 {
-    private readonly ILogger<UpdateProjectUseCase> _logger;
-    private readonly IValidator<UpdateProjectRequest> _validator;
+    private readonly ILogger<CloseProjectRequest> _logger;
+    private readonly IValidator<CloseProjectRequest> _validator;
     private readonly IProjectRepository _repository;
     
-    public UpdateProjectUseCase(
-        ILogger<UpdateProjectUseCase> logger, 
-        IValidator<UpdateProjectRequest> validator,
+    public CloseProjectUseCase(
+        ILogger<CloseProjectRequest> logger, 
+        IValidator<CloseProjectRequest> validator,
         IProjectRepository repository)
     {
         _logger = logger;
@@ -22,22 +23,24 @@ public class UpdateProjectUseCase
         _repository = repository;
     }
 
-    public async Task<Result<Guid, Errors>> Execute(UpdateProjectRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Execute(CloseProjectRequest request, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-        
+
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
         var project = await _repository.GetByIdAsync(request.ProjectId, cancellationToken);
-        
+
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
         
-        project.UpdateData(request.Title, request.Description);
-        
-        _logger.LogInformation("Data of project {ProjectId} was updated", project.Id);
+        project.ToDeactivate();
 
+        await _repository.SaveAsync(project, cancellationToken);
+        
+        _logger.LogInformation("Project {ProjectId} has been closed", project.Id);
+        
         return project.Id;
     }
 }
