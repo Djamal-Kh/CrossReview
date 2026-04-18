@@ -34,17 +34,20 @@ public class ChangeProjectMemberRoleUseCase
         
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
+        
+        var result = project.ChangeEmployeeRole(request.UserId, request.Role);
 
-        var memberId = project.AssignEmployeeToProject(request.UserId, request.Role);
-
+        if (result.IsFailure)
+            return result.Error;
+        
         await _repository.SaveAsync(project, cancellationToken);
         
         _logger.LogInformation(
             "Employee with UserId {UserId} was assign to Project with Id {ProjectId} and his Role: {Role}",
-            memberId,
+            request.UserId,
             request.ProjectId,
             request.Role);
         
-        return memberId;
+        return request.UserId;
     }
 }

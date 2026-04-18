@@ -128,14 +128,16 @@ public class ProjectEntity
         return UnitResult.Success<Error>();
     }
 
-    public void ChangeEmployeeRole(Guid projectMemberId, EnumProjectRole newRole)
+    public UnitResult<Errors> ChangeEmployeeRole(Guid projectMemberId, EnumProjectRole newRole)
     {
         ProjectMember member = _members.Find(m => m.UserId == projectMemberId);
-        
+
         if (member is null)
-            throw new ValidationException("Такого пользователя нет");
+            return GeneralErrors.NotFound(projectMemberId).ToErrors();
         
         member.ChangeRole(newRole);
+        
+        return UnitResult.Success<Errors>();
     }
 
     public Guid CreateReviewPeriod(DateTime startDate, DateTime endDate)
