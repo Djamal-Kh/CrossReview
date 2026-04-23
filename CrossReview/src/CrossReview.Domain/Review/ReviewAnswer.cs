@@ -4,7 +4,7 @@ namespace CrossReview.Domain.Review;
 
 public class ReviewAnswer
 {
-    public ReviewAnswer(Guid questionId, int score, string comment)
+    private ReviewAnswer(Guid questionId, int score, string comment)
     {
         if (questionId == Guid.Empty)
             throw new ValidationException($"Поле {nameof(QuestionId)} не может быть пустым");
@@ -19,7 +19,11 @@ public class ReviewAnswer
     public Guid QuestionId { get; }
     public int Score { get; private set; }
     public string? Comment { get; private set; }
-    
+
+    public static ReviewAnswer Create(Guid questionId,int score, string comment)
+    {
+        return new ReviewAnswer(questionId, score, comment);
+    }
     
     public void Update(int newScore, string newComment)
     {

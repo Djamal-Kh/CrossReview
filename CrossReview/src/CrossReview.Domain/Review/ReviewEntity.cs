@@ -6,13 +6,12 @@ public class ReviewEntity
 {
     private List<ReviewAnswer> _answers;
 
-    public ReviewEntity(
+    private ReviewEntity(
         Guid id, 
         Guid reviewerId, 
         Guid revieweeId, 
         Guid projectId, 
         Guid templateId, 
-        IEnumerable<ReviewAnswer> answers, 
         Guid periodId)
     {
         Validate(id, reviewerId, revieweeId, projectId, templateId, periodId);
@@ -22,14 +21,8 @@ public class ReviewEntity
         RevieweeId = revieweeId;
         ProjectId = projectId;
         TemplateId = templateId;
-        _answers = new List<ReviewAnswer>();
-
-        foreach (var a in answers)
-        {
-           AddAnswer(a); 
-        }
-        
         PeriodId = periodId;
+        _answers = [];
         Status = EnumReviewStatus.Draft;
     }
     
@@ -42,6 +35,23 @@ public class ReviewEntity
     public Guid PeriodId { get; }
     public EnumReviewStatus Status { get; private set; }
 
+    public static ReviewEntity Create(
+        Guid reviewerId, 
+        Guid revieweeId, 
+        Guid projectId, 
+        Guid templateId,
+        Guid periodId)
+    {
+        return new ReviewEntity(
+            Guid.NewGuid(),
+            reviewerId, 
+            revieweeId, 
+            projectId, 
+            templateId,
+            periodId);
+    }
+    
+    //todo нужна будет более серьезная бизнес-логика (валидация)
     public bool IsCompleted(IEnumerable<Guid> templateQuestions)
     {
         var questionIds = templateQuestions.ToList();
@@ -55,7 +65,7 @@ public class ReviewEntity
         return true;
     }
 
-    public void EnsureCompleted(IEnumerable<Guid> templateQuestionIds)
+    private void EnsureCompleted(IEnumerable<Guid> templateQuestionIds)
     {
         if (!IsCompleted(templateQuestionIds))
             throw new ValidationException("Ревью еще не заполнено");
@@ -90,9 +100,11 @@ public class ReviewEntity
             throw new ValidationException("Нельзя редактировать ревью");
     }
     
-    public void AddAnswer(ReviewAnswer answer)
+    public void AddAnswer(Guid questionId, int score, string comment)
     {
         EnsureEditable();
+        
+        var answer = ReviewAnswer.Create(questionId, score, comment);
         
         if (_answers.Any(q => q.QuestionId == answer.QuestionId))
             throw new ValidationException("Ответа для такого вопроса не существует");

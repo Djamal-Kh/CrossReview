@@ -14,9 +14,7 @@
     <ItemGroup>
       <Folder Include="Project\DTOs\" />
       <Folder Include="Review\DTOs\" />
-      <Folder Include="Review\UseCases\" />
       <Folder Include="Template\DTOs\" />
-      <Folder Include="Template\UseCases\" />
       <Folder Include="User\DTO\" />
       <Folder Include="User\UseCases\" />
     </ItemGroup>

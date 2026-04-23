@@ -2,9 +2,9 @@
 
 namespace CrossReview.Domain.Review;
 
-public class EvaluationResult
+public class EvaluationResultEntity
 {
-    public EvaluationResult(
+    private EvaluationResultEntity(
         Guid id,
         Guid userId,
         Guid projectId,
@@ -22,14 +22,22 @@ public class EvaluationResult
     public Guid UserId { get; }
     public Guid ProjectId { get; }
     public Guid PeriodId { get; }
-    public int FinalScore { get; private set; }
+    public double FinalScore { get; private set; }
     public DateTime CalculatedAt { get; private set; }
 
-    public void Calculate(IEnumerable<ReviewEntity> reviews)
+    public static EvaluationResultEntity Create(Guid userId, Guid projectId, Guid periodId)
+    {
+        return new EvaluationResultEntity(Guid.NewGuid(), userId, projectId, periodId);
+    }
+    
+    public void Calculate(List<ReviewEntity> reviews, bool recalculate = false)
     {
         if (!reviews.Any())
-            throw new ValidationException("Не найдено ни одного ревью");
+            throw new ValidationException("Результат уже был рассчитан");
 
+        if (CalculatedAt != default && !recalculate)
+            throw new ValidationException("Не найдено ни одного ревью");
+        
         var completedReviews = reviews
             .Where(r => r.Status == EnumReviewStatus.Submitted)
             .ToList();
@@ -41,16 +49,18 @@ public class EvaluationResult
             .Select(s => s.CalculateAverageScore())
             .ToList();
 
-        FinalScore = (int)Math.Round(scores.Average());
+        FinalScore = Math.Round(scores.Average(), 2);
         CalculatedAt = DateTime.UtcNow;
     }
 
-    public void Recalculate(IEnumerable<ReviewEntity> reviews)
+    public void Recalculate(List<ReviewEntity?> reviews)
     {
         if (CalculatedAt == default)
             throw new ValidationException("Ревью не были ни разу подсчитаны");
+
+        bool recalculate = true;
         
-        Calculate(reviews);
+        Calculate(reviews, recalculate);
     }
     
     private void Validate(Guid id, Guid userId, Guid projectId, Guid periodId)

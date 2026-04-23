@@ -61,4 +61,9 @@ public static class GeneralErrors
         return Error.Validation("value.is.too.short",
             $"{label} слишком длинное. Максимальное количество символов: {lenght}");
     }
+
+    public static Error NotInRangeDateTime(DateTime start, DateTime end)
+    {
+        return Error.Failure("not.in.range.datetime", $"Период активности: от {start} до {end}");
+    }
 }

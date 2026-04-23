@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.ChangeEmployeeRole;
+namespace CrossReview.Application.Project.UseCases.ChangeProjectMemberRole;
 
 public class ChangeProjectMemberRoleUseCase
 {

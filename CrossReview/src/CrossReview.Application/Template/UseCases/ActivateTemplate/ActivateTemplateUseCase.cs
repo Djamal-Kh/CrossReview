@@ -1,0 +1,34 @@
+﻿using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Logging;
+using Shared.Common.ResultPattern;
+
+namespace CrossReview.Application.Template.UseCases.ActivateTemplate;
+
+public class ActivateTemplateUseCase
+{
+    private readonly ILogger<ActivateTemplateUseCase> _logger;
+    private readonly ITemplateRepository _templateRepository;
+    
+    public ActivateTemplateUseCase(
+        ILogger<ActivateTemplateUseCase> logger, 
+        ITemplateRepository templateRepository)
+    {
+        _logger = logger;
+        _templateRepository = templateRepository;
+    }
+
+    public async Task<Result<Guid, Errors>> Execute(ActivateTemplateRequest request,
+        CancellationToken cancellationToken)
+    {
+        var template = await _templateRepository.GetByIdAsync(request.TemplateId, cancellationToken);
+
+        if (template is null)
+            return GeneralErrors.NotFound(request.TemplateId).ToErrors();
+        
+        template.Activate();
+
+        _templateRepository.SaveAsync(template, cancellationToken);
+
+        return template.Id;
+    }
+}

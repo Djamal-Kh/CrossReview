@@ -2,7 +2,7 @@
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.AssignEmployee;
+namespace CrossReview.Application.Project.UseCases.AssignNewProjectMember;
 
 public class AssignNewProjectMemberValidator : AbstractValidator<AssignNewProjectMemberRequest>
 {

@@ -2,41 +2,45 @@
 
 namespace CrossReview.Domain.Template;
 
-public class ReviewTemplateEntity
+public class TemplateEntity
 {
     private List<ReviewQuestion> _questions;
     
     private const int MaxTitleLenght = 300;
     private const int MinTitleLenght = 10;
-    
-    public ReviewTemplateEntity(
+
+    private TemplateEntity(
         Guid id, 
-        string title, 
-        IEnumerable<ReviewQuestion> questions, 
+        Guid projectId,
+        string title,
         bool isActive = false)
     {
         Validate(id, title);
         
         Id = id;
         Title = title;
+        ProjectId = projectId;
         _questions = new List<ReviewQuestion>();
-        
-        foreach (var q in questions)
-        {
-            AddQuestion(q);
-        }
-        
         IsActive = isActive;
     }
     public Guid Id { get; }
+    public Guid ProjectId {get; private set;}
     public string Title { get; private set; }
     public IReadOnlyList<ReviewQuestion> Questions => _questions;
     public bool IsActive { get; private set; }
 
     
-    public void AddQuestion(ReviewQuestion question)
+    public static TemplateEntity Create(Guid projectId, string title)
+    {
+        //todo 
+        return new TemplateEntity(Guid.NewGuid(), projectId, title);
+    }
+
+    public void AddQuestion(string title, int weight)
     {
         EnsureEditable();
+        
+        var question = ReviewQuestion.Create(title, weight);
         
         if (_questions.Any(q => q.Title == question.Title))
             throw new ValidationException("Такой вопрос уже есть в списке вопросов !");
@@ -109,6 +113,22 @@ public class ReviewTemplateEntity
             throw new ValidationException("Шаблон и так имеет статус неактивного");
         
         IsActive = false;
+    }
+
+    public void UpdateTitle(string title)
+    {
+        Title = title;
+    }
+
+    public bool HasQuestion(Guid questionId)
+    {
+        var questionExist = Questions.Any(q => q.Id == questionId);
+
+        if (questionExist)
+            return true;
+
+        else
+            return false;
     }
     
     private void Validate(Guid id, string title)

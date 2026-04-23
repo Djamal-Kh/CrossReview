@@ -6,10 +6,10 @@ namespace CrossReview.Application.Project;
 
 public interface IProjectRepository
 {
-    Task<Result<Guid, Error>> AddAsync(ProjectEntity project, CancellationToken cancellationToken = default);
-    Task SaveAsync(ProjectEntity project, CancellationToken cancellationToken = default);
-    Task<ProjectEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<List<ProjectEntity>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Guid?> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<bool> ExistsByTitleAsync(string title, CancellationToken cancellationToken = default);
+    public Task<Result<Guid, Error>> AddAsync(ProjectEntity project, CancellationToken cancellationToken = default);
+    public Task SaveAsync(ProjectEntity project, CancellationToken cancellationToken = default);
+    public Task<ProjectEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    public Task<List<ProjectEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+    public Task<Guid?> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    public Task<bool> ExistsByTitleAsync(string title, CancellationToken cancellationToken = default);
 }

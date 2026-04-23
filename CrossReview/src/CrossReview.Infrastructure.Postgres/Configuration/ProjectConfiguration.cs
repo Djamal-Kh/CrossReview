@@ -41,7 +41,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<ProjectEntity>
             .OnDelete(DeleteBehavior.Cascade);
         
         builder
-            .HasMany(p => p.Periods)
+            .HasMany(p => p.ReviewPeriods)
             .WithOne()
             .HasForeignKey(rp => rp.Id)
             .OnDelete(DeleteBehavior.Cascade);

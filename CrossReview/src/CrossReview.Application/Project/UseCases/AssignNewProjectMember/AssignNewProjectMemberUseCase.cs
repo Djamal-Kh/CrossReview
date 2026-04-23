@@ -1,11 +1,10 @@
-﻿using CrossReview.Application.Project.UseCases.AddNewReviewPeriod;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.AssignEmployee;
+namespace CrossReview.Application.Project.UseCases.AssignNewProjectMember;
 
 public class AssignNewProjectMemberUseCase
 {

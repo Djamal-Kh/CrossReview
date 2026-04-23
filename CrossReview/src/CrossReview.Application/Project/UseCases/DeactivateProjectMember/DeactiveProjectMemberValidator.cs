@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace CrossReview.Application.Project.UseCases.DeactivateEmployee;
+namespace CrossReview.Application.Project.UseCases.DeactivateProjectMember;
 
 public class DeactiveProjectMemberValidator : AbstractValidator<DeactivateProjectMemberRequest>
 {

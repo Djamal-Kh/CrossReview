@@ -6,14 +6,11 @@ public class ReviewQuestion
 {
     private const int MaxTitleLenght = 300;
     private const int MinTitleLenght = 10;
-    private const double MaxWeight = 0.1;
-    private const double MinWeight = 1.0;
+    private const double MaxWeight = 1;
+    private const double MinWeight = 0.1;
     
-    public ReviewQuestion(Guid id, string title, int weight)
+    private ReviewQuestion(Guid id, string title, int weight)
     {
-        if (id == Guid.Empty)
-            throw new ValidationException($"Поле {nameof(Id)} не может быть пустым");
-        
         ValidateTitle(title);
         ValidateWeight(weight);
         
@@ -24,28 +21,29 @@ public class ReviewQuestion
     
     public Guid Id { get; }
     public string Title {get; private set; } 
-    public double Weight { get; private set; } 
+    public double Weight { get; private set; }
 
-    public void Update(string newTitle, double newWeight)
+    public static ReviewQuestion Create(string title, int weight)
     {
-        ValidateTitle(newTitle);
-        ValidateWeight(newWeight);
+        return new ReviewQuestion(Guid.NewGuid(), title, weight);
+    }
+    
+    public void Update(string? newTitle, double newWeight = 0)
+    {
+
+        if (newWeight == 0 && newTitle is null)
+            throw new Exception();
+        
+        if (newWeight == 0)
+        {
+            ValidateTitle(newTitle);
+            Title = newTitle;
+        }
+        
+        if (newTitle is null)
+            ValidateWeight(newWeight);
 
         Title = newTitle;
-        Weight = newWeight;
-    }
-
-    public void UpdateTitle(string newTitle)
-    {
-        ValidateTitle(newTitle);
-        
-        Title = newTitle;
-    }
-
-    public void UpdateWeight(int newWeight)
-    {
-        ValidateWeight(newWeight);
-        
         Weight = newWeight;
     }
     

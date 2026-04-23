@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrossReview.Infrastructure.Postgres.Configuration;
 
-public class ReviewTemplateConfiguration : IEntityTypeConfiguration<ReviewTemplateEntity>
+public class ReviewTemplateConfiguration : IEntityTypeConfiguration<TemplateEntity>
 {
-    public void Configure(EntityTypeBuilder<ReviewTemplateEntity> builder)
+    public void Configure(EntityTypeBuilder<TemplateEntity> builder)
     {
         builder.ToTable("review_templates");
         
