@@ -4,13 +4,15 @@ namespace CrossReview.Domain.User;
 
 public class UserEntity
 {
-    public UserEntity(
+    private UserEntity(
         Guid id, 
         string firstName,
         string lastName,
         string email, 
-        string phoneNumber, 
-        EnumUserRole role = EnumUserRole.User)
+        string password,
+        string phoneNumber,
+        EnumUserRole role
+        )
     {
         Validate(firstName, lastName, email, phoneNumber);
         
@@ -18,6 +20,7 @@ public class UserEntity
         FirstName = firstName;
         LastName = lastName;
         Email = email;
+        Password = password;
         PhoneNumber = phoneNumber;
         Role = role;
     }
@@ -27,8 +30,24 @@ public class UserEntity
     public string LastName { get; private set; }
     public string Email { get; private set; }
     public string PhoneNumber { get; private set; }
+    public string Password {get; private set;}
     public EnumUserRole Role { get; private set; }
 
+    public static UserEntity Create(string firstName,
+        string lastName,
+        string password,
+        string email,
+        string phoneNumber,
+        EnumUserRole role)
+    {
+        return new UserEntity(
+            Guid.NewGuid(),
+            firstName,
+            lastName,
+            email,
+            password, phoneNumber, role);
+    }
+    
     public void ChangeRole(EnumUserRole newRole)
     {
         if (Role == newRole)

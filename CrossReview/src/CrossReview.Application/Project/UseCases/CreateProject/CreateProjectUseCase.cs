@@ -32,10 +32,10 @@ public class CreateProjectUseCase
         
         var isTitleExist = await _repository.ExistsByTitleAsync(request.Title, cancellationToken);
         
-        var project = ProjectEntity.Create(request.Title, request.Description);
-
         if (isTitleExist)
             return GeneralErrors.ValueAlreadyExists(request.Title).ToErrors();
+        
+        var project = ProjectEntity.Create(request.Title, request.Description);
         
         var result = await _repository.AddAsync(project, cancellationToken);
         

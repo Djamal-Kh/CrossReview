@@ -20,6 +20,12 @@ public static class GeneralErrors
         return Error.NotFound("record.not.found", $"запись не найдена {forId} ");
     }
 
+    public static Error NotFound(string? email = null)
+    {
+        string forEmail = email == null ? string.Empty : $" по Email '{email}'";
+        return Error.NotFound("record.not.found", $"запись не найдена {forEmail} ");
+    }
+    
     public static Error CollectionEmpty()
     {
         return Error.NotFound("record.not.found", "ни одна запись не найдена");

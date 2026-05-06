@@ -16,7 +16,11 @@
       <Folder Include="Review\DTOs\" />
       <Folder Include="Template\DTOs\" />
       <Folder Include="User\DTO\" />
-      <Folder Include="User\UseCases\" />
+      <Folder Include="User\UseCases\GetUsersByRole\" />
+      <Folder Include="User\UseCases\Login\" />
+      <Folder Include="User\UseCases\SearchUsers_nado_li\" />
+      <Folder Include="User\UseCases\UpdateUserProfile\" />
+      <Folder Include="User\UseCases\ChangeUserRole\" />
     </ItemGroup>
 
     <ItemGroup>
