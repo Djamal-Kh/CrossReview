@@ -3,5 +3,7 @@
 public enum EnumReviewPeriodStatus
 {
     Active,
-    Closed
+    Closed,
+    Draft,
+    Archive
 }

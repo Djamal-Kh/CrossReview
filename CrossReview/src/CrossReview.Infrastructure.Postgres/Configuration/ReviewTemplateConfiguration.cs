@@ -1,13 +1,12 @@
-﻿using CrossReview.Domain.Review;
-using CrossReview.Domain.Template;
+﻿using CrossReview.Domain.Template;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrossReview.Infrastructure.Postgres.Configuration;
 
-public class ReviewTemplateConfiguration : IEntityTypeConfiguration<ReviewTemplate>
+public class ReviewTemplateConfiguration : IEntityTypeConfiguration<TemplateEntity>
 {
-    public void Configure(EntityTypeBuilder<ReviewTemplate> builder)
+    public void Configure(EntityTypeBuilder<TemplateEntity> builder)
     {
         builder.ToTable("review_templates");
         

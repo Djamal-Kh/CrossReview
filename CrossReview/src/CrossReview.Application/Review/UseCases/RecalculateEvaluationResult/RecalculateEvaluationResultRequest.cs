@@ -1,0 +1,3 @@
+﻿namespace CrossReview.Application.Review.UseCases.RecalculateEvaluationResult;
+
+public record RecalculateEvaluationResultRequest(Guid ResultId);

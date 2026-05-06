@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrossReview.Infrastructure.Postgres.Configuration;
 
-public class ProjectConfiguration : IEntityTypeConfiguration<Project>
+public class ProjectConfiguration : IEntityTypeConfiguration<ProjectEntity>
 {
-    public void Configure(EntityTypeBuilder<Project> builder)
+    public void Configure(EntityTypeBuilder<ProjectEntity> builder)
     {
         builder.ToTable("projects");
         
@@ -26,7 +26,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired();
 
         builder
-            .Property(p => p.IsActive)
+            .Property(p => p.Status)
             .HasColumnName("is_active")
             .IsRequired();
         
@@ -41,7 +41,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .OnDelete(DeleteBehavior.Cascade);
         
         builder
-            .HasMany(p => p.Periods)
+            .HasMany(p => p.ReviewPeriods)
             .WithOne()
             .HasForeignKey(rp => rp.Id)
             .OnDelete(DeleteBehavior.Cascade);

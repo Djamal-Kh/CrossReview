@@ -20,7 +20,7 @@ public class ReviewQuestionConfiguration : IEntityTypeConfiguration<ReviewQuesti
             .IsRequired();
         
         builder
-            .Property(rq => rq.Text)
+            .Property(rq => rq.Title)
             .HasColumnName("text")
             .IsRequired();
 

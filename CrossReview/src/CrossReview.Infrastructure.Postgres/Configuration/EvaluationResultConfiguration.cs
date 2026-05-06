@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CrossReview.Infrastructure.Postgres.Configuration;
 
-public class EvaluationResultConfiguration : IEntityTypeConfiguration<EvaluationResult>
+public class EvaluationResultConfiguration : IEntityTypeConfiguration<EvaluationResultEntity>
 {
-    public void Configure(EntityTypeBuilder<EvaluationResult> builder)
+    public void Configure(EntityTypeBuilder<EvaluationResultEntity> builder)
     {
         builder.ToTable("evaluation_results");
         
