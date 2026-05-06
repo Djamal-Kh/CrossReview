@@ -37,7 +37,7 @@ public class UpdateProjectTitleUseCase
         
         project.UpdateTitle(request.Title);
         
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("Title of project {ProjectId} was updated", project.Id);
 

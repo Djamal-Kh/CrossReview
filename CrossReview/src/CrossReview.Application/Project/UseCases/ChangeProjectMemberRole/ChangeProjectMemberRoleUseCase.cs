@@ -40,7 +40,7 @@ public class ChangeProjectMemberRoleUseCase
         if (result.IsFailure)
             return result.Error;
         
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation(
             "Employee with UserId {UserId} was assign to Project with Id {ProjectId} and his Role: {Role}",

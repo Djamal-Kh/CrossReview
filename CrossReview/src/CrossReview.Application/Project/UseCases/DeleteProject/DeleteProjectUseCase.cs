@@ -31,7 +31,7 @@ public class DeleteProjectUseCase
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
 
-        await _repository.DeleteAsync(project.Id, cancellationToken);
+        await _repository.DeleteAsync(project, cancellationToken);
         
         _logger.LogInformation("Project {ProjectId} has been deleted", project.Id);
         

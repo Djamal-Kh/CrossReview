@@ -37,7 +37,7 @@ public class CloseProjectUseCase
         
         project.ToDeactivate();
 
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("Project {ProjectId} has been closed", project.Id);
         

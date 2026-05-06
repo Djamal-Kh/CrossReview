@@ -24,7 +24,7 @@ public class DeleteTemplateUseCase
         if (template is null)
             return GeneralErrors.NotFound(request.TemplateId).ToErrors();
         
-        await _templateRepository.DeleteAsync(request.TemplateId, cancellationToken);
+        await _templateRepository.DeleteAsync(template, cancellationToken);
         
         _logger.LogInformation("Че-нибудь напишешь");
         

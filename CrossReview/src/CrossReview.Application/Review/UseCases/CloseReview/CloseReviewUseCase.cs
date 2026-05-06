@@ -17,16 +17,16 @@ public class CloseReviewUseCase
         _reviewRepository = reviewRepository;
     }
     
-    public async Task<Result<Guid, Errors>> Execute(Guid reviewId)
+    public async Task<Result<Guid, Errors>> Execute(CloseReviewRequest request, CancellationToken cancellationToken)
     {
-        var review = await _reviewRepository.GetByIdAsync(reviewId);
+        var review = await _reviewRepository.GetByIdAsync(request.ReviewId, cancellationToken);
         
         if (review is null)
-            return GeneralErrors.NotFound(reviewId).ToErrors();
+            return GeneralErrors.NotFound(request.ReviewId).ToErrors();
         
         review.Close();
         
-        await _reviewRepository.SaveAsync(review);
+        await _reviewRepository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("Close review with id {reviewId}.", review.Id);
         

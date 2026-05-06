@@ -26,7 +26,7 @@ public class UpdateAnswerUseCase
         
         review.UpdateAnswer(request.QuestionId, request.Score, request.Comment);
         
-        await _reviewRepository.SaveAsync(review, cancellationToken);
+        await _reviewRepository.SaveAsync(cancellationToken);
         
         return review.Id;
     }

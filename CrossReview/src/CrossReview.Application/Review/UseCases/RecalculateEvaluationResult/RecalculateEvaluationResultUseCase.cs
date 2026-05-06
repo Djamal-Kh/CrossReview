@@ -33,7 +33,7 @@ public class RecalculateEvaluationResultUseCase
         
         result.Recalculate(reviews);
         
-        await _evaluationResultRepository.SaveAsync(result);
+        await _evaluationResultRepository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("инфа");
         

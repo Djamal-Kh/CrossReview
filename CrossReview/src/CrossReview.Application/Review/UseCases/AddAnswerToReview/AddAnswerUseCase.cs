@@ -49,7 +49,7 @@ public class AddAnswerUseCase
         
         review.AddAnswer(request.QuestionId, request.Score, request.Comment);
         
-        await _reviewRepository.SaveAsync(review, cancellationToken);
+        await _reviewRepository.SaveAsync(cancellationToken);
 
         _logger.LogInformation("здесь будет инфа");
         
