@@ -1,4 +1,7 @@
-﻿using CrossReview.Domain.Review;
+﻿using CrossReview.Domain.Project;
+using CrossReview.Domain.Review;
+using CrossReview.Domain.Template;
+using CrossReview.Domain.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -39,16 +42,50 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
             .Property(r => r.TemplateId)
             .HasColumnName("template_id")
             .IsRequired();
-        
-        builder
-            .HasMany(r => r.Answers)
-            .WithOne()
-            .HasForeignKey(ra => ra.QuestionId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .Property(r => r.PeriodId)
             .HasColumnName("period_id")
             .IsRequired();
+        
+        builder.Property(r => r.Status)
+            .HasConversion<int>()
+            .HasColumnName("status")
+            .IsRequired();
+        
+        builder
+            .HasOne<ReviewPeriod>()
+            .WithMany()
+            .HasForeignKey(r => r.PeriodId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_review_period_id");
+        
+        builder
+            .HasOne<UserEntity>()
+            .WithMany()
+            .HasForeignKey(r => r.ReviewerId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_reviewer_id");
+        
+        builder
+            .HasOne<UserEntity>()
+            .WithMany()
+            .HasForeignKey(r => r.RevieweeId) 
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_reviewee_id");
+        
+        builder
+            .HasOne<ProjectEntity>()
+            .WithMany()
+            .HasForeignKey(r => r.ProjectId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_project_id");
+        
+        builder
+            .HasOne<TemplateEntity>()
+            .WithMany()
+            .HasForeignKey(r => r.TemplateId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_template_id");
     }
 }

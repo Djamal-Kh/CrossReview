@@ -15,6 +15,10 @@ public class ReviewQuestionConfiguration : IEntityTypeConfiguration<ReviewQuesti
             .HasName("pk_question");
 
         builder
+            .Property(rq => rq.TemplateId)
+            .HasColumnName("template_id");
+        
+        builder
             .Property(rq => rq.Id)
             .HasColumnName("question_id")
             .IsRequired();

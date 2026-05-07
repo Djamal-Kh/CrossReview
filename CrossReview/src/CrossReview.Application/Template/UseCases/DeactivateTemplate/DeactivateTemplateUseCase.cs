@@ -27,7 +27,7 @@ public class DeactivateTemplateUseCase
         
         template.Deactivate();
 
-        await _templateRepository.SaveAsync(template, cancellationToken);
+        await _templateRepository.SaveAsync(cancellationToken);
         
         return template.Id;
     }

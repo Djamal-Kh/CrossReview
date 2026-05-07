@@ -36,7 +36,7 @@ public class AssignNewProjectMemberUseCase
 
         var memberId = project.AssignEmployeeToProject(null, request.Role);
 
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation(
             "Employee with UserId {UserId} was assign to Project with Id {ProjectId} and his Role:{Role}",

@@ -39,7 +39,7 @@ public class RemoveProjectMemberUseCase
         if (result.IsFailure)
             return GeneralErrors.NotFound(request.UserId).ToErrors();
 
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("User with Id {request.UserId} in project with id {request.ProjectId} was removed",
             request.UserId, request.ProjectId);

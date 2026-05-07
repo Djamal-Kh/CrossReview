@@ -37,7 +37,7 @@ public class UpdateProjectDescriptionUseCase
         
         project.UpdateDescription(request.Description);
         
-        _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("Description of project {ProjectId} was updated", project.Id);
 

@@ -27,7 +27,7 @@ public class ActivateTemplateUseCase
         
         template.Activate();
 
-        _templateRepository.SaveAsync(template, cancellationToken);
+        await _templateRepository.SaveAsync(cancellationToken);
 
         return template.Id;
     }

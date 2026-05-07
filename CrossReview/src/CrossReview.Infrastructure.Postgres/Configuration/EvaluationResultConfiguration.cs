@@ -1,4 +1,6 @@
-﻿using CrossReview.Domain.Review;
+﻿using CrossReview.Domain.Project;
+using CrossReview.Domain.Review;
+using CrossReview.Domain.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -44,5 +46,24 @@ public class EvaluationResultConfiguration : IEntityTypeConfiguration<Evaluation
             .Property(er => er.CalculatedAt)
             .HasColumnName("calculated_at")
             .IsRequired();
+        
+        builder
+            .HasOne<ReviewPeriod>()
+            .WithMany()
+            .HasForeignKey(er => er.PeriodId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .HasConstraintName("fk_evaluation_result_period_id");
+
+        builder
+            .HasOne<UserEntity>()
+            .WithMany()
+            .HasForeignKey(er => er.UserId)
+            .OnDelete(DeleteBehavior.Restrict);;
+        
+        builder
+            .HasOne<ProjectEntity>()
+            .WithMany()
+            .HasForeignKey(er => er.ProjectId)
+            .OnDelete(DeleteBehavior.Restrict);;
     }
 }

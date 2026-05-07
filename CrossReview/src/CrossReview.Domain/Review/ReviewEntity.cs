@@ -104,7 +104,7 @@ public class ReviewEntity
     {
         EnsureEditable();
         
-        var answer = ReviewAnswer.Create(questionId, score, comment);
+        var answer = ReviewAnswer.Create(Id, questionId, score, comment);
         
         if (_answers.Any(q => q.QuestionId == answer.QuestionId))
             throw new ValidationException("Ответа для такого вопроса не существует");

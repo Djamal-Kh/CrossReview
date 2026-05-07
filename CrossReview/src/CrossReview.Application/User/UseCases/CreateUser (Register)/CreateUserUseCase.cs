@@ -41,15 +41,9 @@ public class CreateUserUseCase
             request.PhoneNumber, request.Role);
         
         var result = await _userRepository.AddAsync(user, cancellationToken);
-
-        if (result.IsFailure)
-        {
-            _logger.LogWarning("Failed to addUser: {email}", request.Email);
-            return GeneralErrors.Failure().ToErrors();
-        }
         
         _logger.LogInformation("Project with email {Email} was added", request.Email);
 
-        return result.Value;
+        return result;
     }
 }

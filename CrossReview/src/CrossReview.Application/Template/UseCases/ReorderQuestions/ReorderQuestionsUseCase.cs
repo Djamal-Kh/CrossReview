@@ -20,7 +20,7 @@ public class ReorderQuestionsUseCase
     // Пока что больше как заглушка, потом подумай как нормально реализовать
     public async Task<Result<Guid, Errors>> Execute(ReorderQuestionsRequest request, CancellationToken cancellationToken)
     {
-        var template = await _templateRepository.GetByIdAsync(request.TemplateId);
+        var template = await _templateRepository.GetByIdAsync(request.TemplateId, cancellationToken);
 
         if (template is null)
             return GeneralErrors.NotFound(request.TemplateId).ToErrors();
@@ -29,7 +29,7 @@ public class ReorderQuestionsUseCase
 
         var orderedList = questions.OrderByDescending(r => r.Weight);
 
-        await _templateRepository.SaveAsync(template, cancellationToken);
+        await _templateRepository.SaveAsync(cancellationToken);
 
         return template.Id;
     }

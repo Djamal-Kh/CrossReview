@@ -26,7 +26,7 @@ public class RemoveAnswerUseCase
         
         review.RemoveAnswer(request.QuestionId);
 
-        await _reviewRepository.SaveAsync(review, cancellationToken);
+        await _reviewRepository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("инфа");
 

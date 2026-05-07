@@ -36,11 +36,11 @@ public class TemplateEntity
         return new TemplateEntity(Guid.NewGuid(), projectId, title);
     }
 
-    public void AddQuestion(string title, int weight)
+    public void AddQuestion(Guid templateId,string title, int weight)
     {
         EnsureEditable();
         
-        var question = ReviewQuestion.Create(title, weight);
+        var question = ReviewQuestion.Create(templateId, title, weight);
         
         if (_questions.Any(q => q.Title == question.Title))
             throw new ValidationException("Такой вопрос уже есть в списке вопросов !");

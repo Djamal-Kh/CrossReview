@@ -33,9 +33,9 @@ public class AddQuestionUseCase
         if (template is null)
             return GeneralErrors.NotFound(request.TemplateId).ToErrors();
 
-        template.AddQuestion(request.Title, request.Weight);
+        template.AddQuestion(request.TemplateId, request.Title, request.Weight);
         
-        await _repository.SaveAsync(template, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
 
         _logger.LogInformation("Напишешь че-нить нормальное");
         

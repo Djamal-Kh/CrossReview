@@ -52,7 +52,7 @@ public class UpdateQuestionUseCase
         else 
             question.Update(request.Title);
         
-        await _templateRepository.SaveAsync(template, cancellationToken);
+        await _templateRepository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("инфа");
 

@@ -37,7 +37,7 @@ public class SubmitReviewUseCase
         
         review.Submit(templateQuestionIds);
         
-        await _reviewRepository.SaveAsync(review, cancellationToken);
+        await _reviewRepository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("инфа");
 

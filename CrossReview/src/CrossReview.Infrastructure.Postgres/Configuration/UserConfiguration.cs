@@ -48,9 +48,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasConversion<int>()
             .HasColumnName("role")
             .IsRequired();
-            
 
-
-
+        builder
+            .Property(u => u.PasswordHash)
+            .HasColumnName("password_hash")
+            .IsRequired();
+        
+        builder.HasIndex(x => x.Email).IsUnique();
     }
 }

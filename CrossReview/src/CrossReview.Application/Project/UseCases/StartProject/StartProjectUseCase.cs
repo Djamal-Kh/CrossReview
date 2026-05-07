@@ -39,7 +39,7 @@ public class StartProjectUseCase
         if (result.IsFailure)
             return result.Error;
         
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("Project {ProjectId} was activated", project.Id);
 
