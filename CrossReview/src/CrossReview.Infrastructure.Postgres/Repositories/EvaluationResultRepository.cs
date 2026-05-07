@@ -23,7 +23,13 @@ public class EvaluationResultRepository(CrossReviewDbContext context) : IEvaluat
 
     public async Task<EvaluationResultEntity?> GetByParametersAsync(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException(); // СДЕЛАЙ
+        var result = await context.EvaluationResults
+            .AsNoTracking()
+            .FirstOrDefaultAsync(er => er.UserId == userId 
+                                       && er.ProjectId == projectId 
+                                       && er.PeriodId == periodId, cancellationToken);
+        
+        return result;
     }
 
     public async Task<EvaluationResultEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

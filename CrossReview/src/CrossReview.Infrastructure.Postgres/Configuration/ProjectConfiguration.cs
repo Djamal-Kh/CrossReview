@@ -33,17 +33,5 @@ public class ProjectConfiguration : IEntityTypeConfiguration<ProjectEntity>
         builder
             .Property(p => p.Description)
             .HasColumnName("description");
-        
-        builder
-            .HasMany(p => p.Members)
-            .WithOne()
-            .HasForeignKey(pm => pm.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        builder
-            .HasMany(p => p.ReviewPeriods)
-            .WithOne()
-            .HasForeignKey(rp => rp.Id)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

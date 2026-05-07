@@ -30,20 +30,42 @@ public class ReviewRepository(CrossReviewDbContext context) : IReviewRepository
         return review;
     }
 
-    public async Task<List<ReviewEntity?>> GetByReviewee(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default)
+    public async Task<List<ReviewEntity?>> GetByReviewee(Guid userId, Guid projectId, Guid periodId,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException(); // СДЕЛАЙ
+        var reviews = await context.Reviews
+            .AsNoTracking()
+            .Where(r => r.RevieweeId == userId 
+                                                      && r.ProjectId == projectId 
+                                                      && r.PeriodId == periodId)
+            .ToListAsync(cancellationToken);
+
+        return reviews;
     }
 
     public async Task<ReviewEntity?> GetByProject(Guid projectId, Guid revieweeId, Guid reviewerId, Guid periodId,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException(); // СДЕЛАЙ
+        var review = await context.Reviews
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.ProjectId == projectId 
+                && r.RevieweeId == revieweeId
+                && r.ReviewerId == reviewerId
+                && r.PeriodId == periodId, cancellationToken);
+
+        return review;
     }
 
     public async Task<List<ReviewEntity>> GetAllAsync(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException(); // СДЕЛАЙ
+        var reviews = await context.Reviews
+            .AsNoTracking()
+            .Where(r => r.RevieweeId == userId
+                && r.ProjectId == projectId
+                && r.PeriodId == periodId)
+            .ToListAsync(cancellationToken);
+
+        return reviews;
     }
 
     public async Task<Guid?> DeleteAsync(ReviewEntity review, CancellationToken cancellationToken = default)
@@ -55,6 +77,15 @@ public class ReviewRepository(CrossReviewDbContext context) : IReviewRepository
 
     public async Task<bool> ExistsReviewAsync(Guid reviewerId, Guid revieweeId, Guid periodId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException(); // СДЕЛАЙ
+        var review = await context.Reviews
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.ReviewerId == reviewerId
+                                      && r.RevieweeId == revieweeId
+                                      && r.PeriodId == periodId);
+
+        if (review is null)
+            return false;
+
+        return true;
     }
 }

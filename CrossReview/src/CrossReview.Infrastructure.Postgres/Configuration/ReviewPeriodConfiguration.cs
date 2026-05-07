@@ -9,31 +9,34 @@ public class ReviewPeriodConfiguration : IEntityTypeConfiguration<ReviewPeriod>
     public void Configure(EntityTypeBuilder<ReviewPeriod> builder)
     {
         builder.ToTable("review_periods");
-
-        builder
-            .HasKey(rp => rp.Id)
-            .HasName("pk_period_id");
         
-        builder
-            .Property(rp => rp.Id)
+        builder.HasKey(rp => rp.Id);
+        
+        builder.Property(rp => rp.Id)
             .HasColumnName("id")
-            .ValueGeneratedOnAdd()
-            .IsRequired();
+            .ValueGeneratedOnAdd();
 
-        builder
-            .Property(rp => rp.StartDate)
+        builder.Property(rp => rp.ProjectId)
+            .HasColumnName("project_id")
+            .IsRequired();
+        
+        builder.Property(rp => rp.StartDate)
             .HasColumnName("start_date")
             .IsRequired();
-
-        builder
-            .Property(rp => rp.EndDate)
+        
+        builder.Property(rp => rp.EndDate)
             .HasColumnName("end_date")
             .IsRequired();
-
-        builder
-            .Property(rp => rp.Status)
+        
+        builder.Property(rp => rp.Status)
             .HasConversion<int>()
             .HasColumnName("status")
+            .IsRequired();
+
+        builder.HasOne<ProjectEntity>()
+            .WithMany(x => x.ReviewPeriods)
+            .HasForeignKey(x => x.ProjectId)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
     }
 }

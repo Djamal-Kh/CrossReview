@@ -9,7 +9,7 @@ public class UserEntity
         string firstName,
         string lastName,
         string email, 
-        string password,
+        string passwordHash,
         string phoneNumber,
         EnumUserRole role
         )
@@ -20,7 +20,7 @@ public class UserEntity
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        Password = password;
+        PasswordHash = passwordHash;
         PhoneNumber = phoneNumber;
         Role = role;
     }
@@ -30,12 +30,12 @@ public class UserEntity
     public string LastName { get; private set; }
     public string Email { get; private set; }
     public string PhoneNumber { get; private set; }
-    public string Password {get; private set;}
+    public string PasswordHash {get; private set;}
     public EnumUserRole Role { get; private set; }
 
     public static UserEntity Create(string firstName,
         string lastName,
-        string password,
+        string passwordHash,
         string email,
         string phoneNumber,
         EnumUserRole role)
@@ -45,7 +45,7 @@ public class UserEntity
             firstName,
             lastName,
             email,
-            password, phoneNumber, role);
+            passwordHash, phoneNumber, role);
     }
     
     public void ChangeRole(EnumUserRole newRole)
