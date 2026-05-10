@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace CrossReview.EvaluationResult;
+namespace CrossReview.Review.Controllers;
 
 public class EvaluationResultController : ControllerBase
 {

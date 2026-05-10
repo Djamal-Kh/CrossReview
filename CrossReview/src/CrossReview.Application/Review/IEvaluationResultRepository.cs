@@ -2,7 +2,7 @@
 using CSharpFunctionalExtensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Review.UseCases;
+namespace CrossReview.Application.Review;
 
 public interface IEvaluationResultRepository
 {

@@ -30,7 +30,7 @@ public class ReviewPeriod
     
     public bool IsActiveNow()
     {
-        var currentTime = DateTime.Now;
+        var currentTime = DateTime.UtcNow;
         
         if (Status is EnumReviewPeriodStatus.Active && currentTime >= StartDate && currentTime <= EndDate)
             return true;
@@ -113,5 +113,8 @@ public class ReviewPeriod
 
         if (startDate == default || endDate == default)
             throw new ValidationException("Дата не инициализирована");
+        
+        if (startDate >= endDate)
+            throw new ValidationException("Ревью не может закончиться до начала ревью");
     }
 }

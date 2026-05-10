@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace CrossReview.Review;
+namespace CrossReview.Review.Controllers;
 
 public class ReviewController : ControllerBase
 {

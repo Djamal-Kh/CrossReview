@@ -3,7 +3,7 @@ using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Review.UseCases.GetReviewById;
+namespace CrossReview.Application.Review.UseCases.GetReviewByParameters;
 
 public class GetReviewByParametersUseCase
 {

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.User.UseCases.CreateUser;
+namespace CrossReview.Application.User.UseCases.CreateUser__Register_;
 
 public class CreateUserUseCase
 {

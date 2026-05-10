@@ -80,21 +80,19 @@ public class ProjectEntity
         UpdateDescription(description);
     }
 
-    public Guid AssignEmployeeToProject(Guid? userId, EnumProjectRole role)
+    public Guid AssignEmployeeToProject(Guid userId, EnumProjectRole role = EnumProjectRole.Developer)
     {
         ProjectMember member = _members.Find(m => m.UserId == userId);
 
-        if (member is null && userId is not null)
-            throw new ValidationException("Такого пользователя нет в проекте");
-
-        if (member is null && userId is null)
+        if (member is null)
         {
             member = ProjectMember.Create(role);
+            
             _members.Add(member);
 
             return member.UserId;
         }
-
+        
         if (member.IsActive)
             throw new ValidationException("Пользователь уже имеет статус активного");
 

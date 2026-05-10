@@ -33,8 +33,8 @@ public class AssignNewProjectMemberUseCase
         
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
-
-        var memberId = project.AssignEmployeeToProject(null, request.Role);
+        
+        var memberId = project.AssignEmployeeToProject(request.UserId, request.Role);
 
         await _repository.SaveAsync(project, cancellationToken);
         
