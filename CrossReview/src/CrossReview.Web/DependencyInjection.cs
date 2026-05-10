@@ -9,6 +9,7 @@ public static class DependencyInjection
     {
         services.AddApplication();
         services.AddInfrastructure();
+        services.AddWeb();
         
         return services;
     }
@@ -16,8 +17,12 @@ public static class DependencyInjection
     public static IServiceCollection AddWeb(this IServiceCollection services)
     {
         services.AddControllers();
+        
         services.AddSwaggerGen();
         services.AddOpenApi();
+
+        services.AddAuthorization();
+        services.AddAuthentication();
         
         return services;
     }

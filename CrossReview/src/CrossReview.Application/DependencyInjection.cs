@@ -40,7 +40,6 @@ using CrossReview.Application.Template.UseCases.RemoveQuestionFromTemplate;
 using CrossReview.Application.Template.UseCases.ReorderQuestions;
 using CrossReview.Application.Template.UseCases.UpdateQuestionInTemplate;
 using CrossReview.Application.Template.UseCases.UpdateTemplateTitle;
-using CrossReview.Application.User;
 using CrossReview.Application.User.UseCases.CreateUser__Register_;
 using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;

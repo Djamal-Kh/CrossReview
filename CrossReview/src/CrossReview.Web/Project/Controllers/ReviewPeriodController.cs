@@ -63,7 +63,7 @@ public class ReviewPeriodController : ControllerBase
     }
     
     [HttpPatch]
-    [Route("close")]
+    [Route("archive")]
     public async Task<IActionResult> Archive(
         Guid projectId,
         Guid periodId,
@@ -80,7 +80,7 @@ public class ReviewPeriodController : ControllerBase
     }
     
     [HttpPatch]
-    [Route("close")]
+    [Route("update")]
     public async Task<IActionResult> UpdateDates(
         Guid projectId,
         Guid periodId,
