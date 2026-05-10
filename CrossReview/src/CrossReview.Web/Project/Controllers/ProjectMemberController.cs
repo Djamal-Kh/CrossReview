@@ -1,7 +1,6 @@
 ﻿using CrossReview.Application.Project.UseCases.AssignNewProjectMember;
 using CrossReview.Application.Project.UseCases.ChangeProjectMemberRole;
 using CrossReview.Application.Project.UseCases.DeactivateProjectMember;
-using CrossReview.Application.Project.UseCases.GetProjectById;
 using CrossReview.Application.Project.UseCases.GetProjectMemberById;
 using CrossReview.Application.Project.UseCases.GetProjectMembers;
 using CrossReview.Application.Project.UseCases.RemoveEmployee;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CrossReview.Project.Controllers;
 
 [Route("api/project/members/")]
+[ApiController]
 public class ProjectMemberController : ControllerBase
 {
     private readonly AssignNewProjectMemberUseCase _assignNewProjectMemberUseCase;
