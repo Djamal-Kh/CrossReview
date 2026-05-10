@@ -27,9 +27,9 @@ public class CreateReviewUseCase
         _templateRepository = templateRepository;
     }
 
-    public async Task<Result<Guid, Errors>> Execute(CreateReviewRequest request)
+    public async Task<Result<Guid, Errors>> Execute(CreateReviewRequest request, CancellationToken cancellationToken)
     {
-        var project = await _projectRepository.GetByIdAsync(request.ProjectId);
+        var project = await _projectRepository.GetByIdAsync(request.ProjectId, cancellationToken);
 
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
@@ -46,7 +46,7 @@ public class CreateReviewUseCase
         
         project.EnsureUsersCanReviewEachOther(request.ReviewerId, request.RevieweeId);
 
-        var template = await _templateRepository.GetByIdAsync(request.TemplateId);
+        var template = await _templateRepository.GetByIdAsync(request.TemplateId, cancellationToken);
         
         if (template is null)
             return GeneralErrors.NotFound(request.TemplateId).ToErrors();
@@ -66,12 +66,13 @@ public class CreateReviewUseCase
         var reviewExists = await _reviewRepository.ExistsReviewAsync(
             request.ReviewerId,
             request.RevieweeId,
-            request.PeriodId);
+            request.PeriodId,
+            cancellationToken);
         
         if (reviewExists)
             return GeneralErrors.ValueIsInvalid("Отзыв уже существует").ToErrors();
         
-        await _reviewRepository.AddAsync(review);
+        await _reviewRepository.AddAsync(review, cancellationToken);
         
         _logger.LogInformation("Review created {ReviewId}, reviewer {ReviewerId}, reviewee {RevieweeId}, period {PeriodId}",
             review.Id,

@@ -24,7 +24,7 @@ public class ReviewQuestion
     public double Weight { get; private set; }
     public Guid TemplateId { get; private set; }
 
-    public static ReviewQuestion Create(Guid templateId,string title, int weight)
+    public static ReviewQuestion Create(Guid templateId,string title, double weight)
     {
         return new ReviewQuestion(Guid.NewGuid(), templateId, title, weight);
     }

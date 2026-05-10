@@ -18,10 +18,10 @@ public class GetProjectReviewsUseCase
         _reviewRepository = reviewRepository;
     }
 
-    public async Task<Result<ReviewEntity, Errors>> Execute(GetProjectReviewsRequest request)
+    public async Task<Result<ReviewEntity, Errors>> Execute(GetProjectReviewsRequest request, CancellationToken cancellationToken)
     {
         var review = await _reviewRepository.GetByProject(request.ProjectId, request.RevieweeId, request.ReviewerId,
-            request.PeriodId);
+            request.PeriodId, cancellationToken);
 
         if (review is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();

@@ -36,7 +36,7 @@ public class TemplateEntity
         return new TemplateEntity(Guid.NewGuid(), projectId, title);
     }
 
-    public void AddQuestion(Guid templateId,string title, int weight)
+    public void AddQuestion(Guid templateId,string title, double weight)
     {
         EnsureEditable();
         
