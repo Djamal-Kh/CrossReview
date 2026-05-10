@@ -1,4 +1,5 @@
-﻿using CrossReview.Application.Review.UseCases;
+﻿using CrossReview.Application.Review;
+using CrossReview.Application.Review.UseCases;
 using CrossReview.Domain.Review;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;

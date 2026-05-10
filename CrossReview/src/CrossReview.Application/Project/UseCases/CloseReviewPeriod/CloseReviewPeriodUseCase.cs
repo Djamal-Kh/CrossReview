@@ -12,7 +12,7 @@ public class CloseReviewPeriodUseCase
         _projectRepository = projectRepository;
     }
 
-    public async Task<Result<Guid, Errors>> Execute(CloseReviewPeriodRequest request,
+    public async Task<UnitResult<Errors>> Execute(CloseReviewPeriodRequest request,
         CancellationToken cancellationToken)
     {
         var project = await _projectRepository.GetByIdAsync(request.ProjectId, cancellationToken);
@@ -26,5 +26,9 @@ public class CloseReviewPeriodUseCase
             return GeneralErrors.NotFound(request.ReviewPeriodId).ToErrors();
         
         reviewPeriod.Close();
+
+        await _projectRepository.SaveAsync(cancellationToken);
+
+        return Result.Success<Errors>();
     }
 }

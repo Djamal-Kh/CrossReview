@@ -86,7 +86,7 @@ public class ProjectEntity
 
         if (member is null)
         {
-            member = ProjectMember.Create(role);
+            member = ProjectMember.Create(userId, role);
             
             _members.Add(member);
 
@@ -144,7 +144,7 @@ public class ProjectEntity
             throw new ValidationException(
                 $"Значение поля {nameof(startDate)} не может быть позже или равно полю {nameof(endDate)}");
 
-        var period = ReviewPeriod.Create(startDate, endDate);
+        var period = ReviewPeriod.Create(Id, startDate, endDate);
 
         _reviewPeriods.Add(period);
 
