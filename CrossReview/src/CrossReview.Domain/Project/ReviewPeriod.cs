@@ -6,6 +6,7 @@ public class ReviewPeriod
 {
     private ReviewPeriod(
         Guid id, 
+        Guid projectId,
         DateTime startDate,
         DateTime endDate, 
         EnumReviewPeriodStatus status = EnumReviewPeriodStatus.Draft)
@@ -13,19 +14,21 @@ public class ReviewPeriod
         Validate(id, startDate, endDate);
         
         Id = id;
+        ProjectId = projectId;
         StartDate = startDate;
         EndDate = endDate;
         Status = status;
     }
     
     public Guid Id { get; }
+    public Guid ProjectId { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public EnumReviewPeriodStatus Status { get; private set; }
 
-    public static ReviewPeriod Create(DateTime startDate, DateTime endDate)
+    public static ReviewPeriod Create(Guid projectId, DateTime startDate, DateTime endDate)
     {
-        return new ReviewPeriod(Guid.NewGuid(), startDate, endDate);
+        return new ReviewPeriod(Guid.NewGuid(), projectId, startDate, endDate);
     }
     
     public bool IsActiveNow()

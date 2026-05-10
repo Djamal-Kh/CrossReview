@@ -9,7 +9,7 @@ public class ReviewQuestion
     private const double MaxWeight = 1;
     private const double MinWeight = 0.1;
     
-    private ReviewQuestion(Guid id, string title, int weight)
+    private ReviewQuestion(Guid id, Guid templateId, string title, double weight)
     {
         ValidateTitle(title);
         ValidateWeight(weight);
@@ -22,10 +22,11 @@ public class ReviewQuestion
     public Guid Id { get; }
     public string Title {get; private set; } 
     public double Weight { get; private set; }
+    public Guid TemplateId { get; private set; }
 
-    public static ReviewQuestion Create(string title, int weight)
+    public static ReviewQuestion Create(Guid templateId,string title, int weight)
     {
-        return new ReviewQuestion(Guid.NewGuid(), title, weight);
+        return new ReviewQuestion(Guid.NewGuid(), templateId, title, weight);
     }
     
     public void Update(string? newTitle, double newWeight = 0)

@@ -36,7 +36,7 @@ public class UpdateTemplateTitleUseCase
         
         template.UpdateTitle(request.Title);
 
-        await _templateRepository.SaveAsync(template, cancellationToken);
+        await _templateRepository.SaveAsync(cancellationToken);
         
         _logger.LogInformation("инфа");
 

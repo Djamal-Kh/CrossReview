@@ -26,7 +26,7 @@ public class RemoveQuestionUseCase
         
         template.RemoveQuestion(request.QuestionId);
 
-        await _templateRepository.SaveAsync(template, cancellationToken);
+        await _templateRepository.SaveAsync(cancellationToken);
 
         return template.Id;
     }

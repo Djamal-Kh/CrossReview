@@ -39,14 +39,8 @@ public class CreateProjectUseCase
         
         var result = await _repository.AddAsync(project, cancellationToken);
         
-        if (result.IsFailure)
-        {
-            _logger.LogWarning("Failed to create project: {Title}", request.Title);
-            return GeneralErrors.Failure().ToErrors();
-        }
-        
         _logger.LogInformation("Project with title {Title} was created", request.Title);
 
-        return result.Value;
+        return result;
     }
 }

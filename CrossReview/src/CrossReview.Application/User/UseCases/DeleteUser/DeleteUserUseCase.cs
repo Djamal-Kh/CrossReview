@@ -24,7 +24,7 @@ public class DeleteUserUseCase
         if (user is null)
             return GeneralErrors.NotFound(request.UserId).ToErrors();
 
-        var result = await _userRepository.DeleteAsync(request.UserId);
+        var result = await _userRepository.DeleteAsync(user);
         
         _logger.LogInformation("User {UserId} was deleted", user.Id);
 

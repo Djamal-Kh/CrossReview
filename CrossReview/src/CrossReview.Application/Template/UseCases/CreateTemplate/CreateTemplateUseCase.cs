@@ -33,9 +33,6 @@ public class CreateTemplateUseCase
         
         var result = await _repository.AddAsync(newTemplate, cancellationToken);
 
-        if (result.IsFailure)
-            return GeneralErrors.Failure().ToErrors();
-
-        return result.Value;
+        return result;
     }
 }

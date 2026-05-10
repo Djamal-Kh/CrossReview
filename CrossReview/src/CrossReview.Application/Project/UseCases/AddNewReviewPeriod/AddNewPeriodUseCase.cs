@@ -36,7 +36,7 @@ public class AddNewPeriodUseCase
         
         var periodId = project.CreateReviewPeriod(request.StartDate, request.EndDate);
         
-        await _repository.SaveAsync(project, cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
 
         _logger.LogInformation(
             "ReviewPeriod {PeriodId} created for project {ProjectId}",
