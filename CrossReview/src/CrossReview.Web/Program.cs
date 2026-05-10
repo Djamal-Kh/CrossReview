@@ -1,18 +1,12 @@
+using CrossReview;
 using CrossReview.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddProgramDependencies();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
-var services = builder.Services;
-
-services.AddDbContext<CrossReviewDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("CrossReview")));
 
 var app = builder.Build();
 
