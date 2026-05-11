@@ -1,6 +1,6 @@
 ﻿using CrossReview.Domain.Project;
 using CrossReview.Domain.Review;
-using CrossReview.Domain.User;
+using Crossreview.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -53,17 +53,16 @@ public class EvaluationResultConfiguration : IEntityTypeConfiguration<Evaluation
             .HasForeignKey(er => er.PeriodId)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("fk_evaluation_result_period_id");
-
-        builder
-            .HasOne<UserEntity>()
-            .WithMany()
-            .HasForeignKey(er => er.UserId)
-            .OnDelete(DeleteBehavior.Restrict);;
         
         builder
             .HasOne<ProjectEntity>()
             .WithMany()
             .HasForeignKey(er => er.ProjectId)
-            .OnDelete(DeleteBehavior.Restrict);;
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(er => er.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

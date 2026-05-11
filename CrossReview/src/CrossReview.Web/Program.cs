@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddProgramDependencies();
+var configuration = builder.Configuration;
+
+builder.Services.AddProgramDependencies(configuration);
 
 var app = builder.Build();
 
@@ -16,6 +18,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

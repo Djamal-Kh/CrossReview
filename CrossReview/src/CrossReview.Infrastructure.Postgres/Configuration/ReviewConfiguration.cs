@@ -1,7 +1,7 @@
 ﻿using CrossReview.Domain.Project;
 using CrossReview.Domain.Review;
 using CrossReview.Domain.Template;
-using CrossReview.Domain.User;
+using Crossreview.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -61,20 +61,6 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
             .HasConstraintName("fk_review_period_id");
         
         builder
-            .HasOne<UserEntity>()
-            .WithMany()
-            .HasForeignKey(r => r.ReviewerId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("fk_reviewer_id");
-        
-        builder
-            .HasOne<UserEntity>()
-            .WithMany()
-            .HasForeignKey(r => r.RevieweeId) 
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("fk_reviewee_id");
-        
-        builder
             .HasOne<ProjectEntity>()
             .WithMany()
             .HasForeignKey(r => r.ProjectId)
@@ -87,5 +73,15 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
             .HasForeignKey(r => r.TemplateId)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("fk_template_id");
+        
+        builder.HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(r => r.ReviewerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(r => r.RevieweeId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

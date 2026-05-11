@@ -2,9 +2,9 @@
 
 namespace CrossReview.Application.User.UseCases.CreateUser__Register_;
 
-public class CreateUserValidator : AbstractValidator<CreateUserRequest>
+public class RegisterUserValidator : AbstractValidator<RegisterUserRequest>
 {
-    public CreateUserValidator()
+    public RegisterUserValidator()
     {
         
     }

@@ -28,12 +28,6 @@ public class ReviewTemplateConfiguration : IEntityTypeConfiguration<TemplateEnti
             .Property(rt => rt.Title)
             .HasColumnName("title")
             .IsRequired();
-        
-        builder
-            .HasMany(rt => rt.Questions)
-            .WithOne()
-            .HasForeignKey(q => q.Id)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .Property(rt => rt.IsActive)

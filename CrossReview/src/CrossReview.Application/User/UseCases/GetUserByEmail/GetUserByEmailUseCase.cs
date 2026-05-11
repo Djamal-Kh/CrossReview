@@ -1,4 +1,4 @@
-﻿using CrossReview.Domain.User;
+﻿using CrossReview.Application.User.DTO;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
@@ -8,24 +8,24 @@ namespace CrossReview.Application.User.UseCases.GetUserByEmail;
 public class GetUserByEmailUseCase
 {
     private readonly ILogger<GetUserByEmailUseCase> _logger;
-    private readonly IUserRepository _userRepository;
-    
+    private readonly IIdentityService _identityService;
+
     public GetUserByEmailUseCase(
         ILogger<GetUserByEmailUseCase> logger, 
-        IUserRepository userRepository)
+        IIdentityService identityService)
     {
         _logger = logger;
-        _userRepository = userRepository;
+        _identityService = identityService;
     }
 
-    public async Task<Result<UserEntity, Errors>> Execute(GetUserByEmailRequest request,
+    public async Task<Result<UserDto, Errors>> Execute(GetUserByEmailRequest request,
         CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+        var user = await _identityService.GetByEmail(request.Email);
 
         if (user is null)
             return GeneralErrors.NotFound(request.Email).ToErrors();
-        
+
         _logger.LogInformation("User with email: {Email} was founded", user.Email);
 
         return user;

@@ -2,7 +2,6 @@
 using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
-using CrossReview.Domain.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.User;
@@ -11,47 +10,45 @@ namespace CrossReview.User;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly CreateUserUseCase _createUserUseCase;
+    private readonly RegisterUserUseCase _registerUserUseCase;
     private readonly DeleteUserUseCase _deleteUserUseCase;
     private readonly GetUserByEmailUseCase _getUserByEmailUseCase;
     private readonly GetUserByIdUseCase _getUserByIdUseCase;
-    
+
     public UserController(
-        CreateUserUseCase createUserUseCase,
+        RegisterUserUseCase registerUserUseCase,
         DeleteUserUseCase deleteUserUseCase, 
         GetUserByEmailUseCase getUserByEmailUseCase, 
         GetUserByIdUseCase getUserByIdUseCase)
     {
-        _createUserUseCase = createUserUseCase;
+        _registerUserUseCase = registerUserUseCase;
         _deleteUserUseCase = deleteUserUseCase;
         _getUserByEmailUseCase = getUserByEmailUseCase;
         _getUserByIdUseCase = getUserByIdUseCase;
     }
 
     [HttpPost]
-    [Route("create")]
-    public async Task<IActionResult> Create(
+    [Route("register")]
+    public async Task<IActionResult> Register(
         string firstName,
         string lastName,
         string email,
         string password,
         string phoneNumber,
-        EnumUserRole? role,
         CancellationToken cancellationToken)
     {
-        var request = new CreateUserRequest(
+        var request = new RegisterUserRequest(
             firstName, 
             lastName, 
             email, 
             password,
-            phoneNumber,
-            role ?? EnumUserRole.User);
+            phoneNumber);
 
-        var result = await _createUserUseCase.Execute(request, cancellationToken);
-        
+        var result = await _registerUserUseCase.Execute(request, cancellationToken);
+
         if (result.IsFailure)
             return BadRequest(result.Error);
-        
+
         return Ok(result.Value);
     }
 
@@ -62,12 +59,12 @@ public class UserController : ControllerBase
         CancellationToken cancellationToken)
     {
         var request = new GetUserByEmailRequest(email);
-        
+
         var result = await _getUserByEmailUseCase.Execute(request, cancellationToken);
-        
+
         if (result.IsFailure)
             return BadRequest(result.Error);
-        
+
         return Ok(result.Value);
     }
 
@@ -100,6 +97,6 @@ public class UserController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
         
-        return Ok(result.Value);
+        return Ok();
     }
 }

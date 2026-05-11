@@ -105,7 +105,7 @@ public static class DependencyInjection
         services.AddScoped<ReorderQuestionsUseCase>();
         services.AddScoped<UpdateQuestionUseCase>();
         services.AddScoped<UpdateTemplateTitleUseCase>();
-        services.AddScoped<CreateUserUseCase>();
+        services.AddScoped<RegisterUserUseCase>();
         services.AddScoped<DeleteUserUseCase>();
         services.AddScoped<GetUserByEmailUseCase>();
         services.AddScoped<GetUserByIdUseCase>();
