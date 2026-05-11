@@ -32,10 +32,12 @@ public class RegisterAdminUseCase
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
-        var user = await _identityService.RegisterAdmin(request);
+        var result = await _identityService.RegisterAdmin(request);
         
-        if (user is null)
+        if (result.IsFailure)
             return GeneralErrors.Failure("User creation failed").ToErrors();
+        
+        var user = result.Value;
         
         var jwtUser = new JwtUserModel{
             Id = user.Id,

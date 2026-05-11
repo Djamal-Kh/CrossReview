@@ -2,7 +2,9 @@
 using CrossReview.Application.User.DTO;
 using CrossReview.Application.User.UseCases.Register;
 using CrossReview.Application.User.UseCases.RegisterAdmin;
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Identity;
+using Shared.Common.ResultPattern;
 
 namespace Crossreview.Infrastructure.Identity;
 
@@ -42,7 +44,7 @@ public class IdentityService : IIdentityService
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
-    public async Task<UserIdentityResult?> RegisterUser(RegisterUserRequest request)
+    public async Task<Result<UserIdentityResult?, Errors>> RegisterUser(RegisterUserRequest request)
     {
         var user = new AppUser
         {
@@ -55,10 +57,7 @@ public class IdentityService : IIdentityService
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
-        {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"User creation failed: {errors}");
-        }
+            return GeneralErrors.DuplicateValues(result.Errors.ToString()).ToErrors();
         
         await _userManager.AddToRoleAsync(user, "User");
 
@@ -72,7 +71,7 @@ public class IdentityService : IIdentityService
         };
     }
 
-    public async Task<UserIdentityResult?> RegisterAdmin(RegisterAdminRequest request)
+    public async Task<Result<UserIdentityResult?, Errors>> RegisterAdmin(RegisterAdminRequest request)
     {
         var user = new AppUser
         {
@@ -85,10 +84,7 @@ public class IdentityService : IIdentityService
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
-        {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"User creation failed: {errors}");
-        }
+            return GeneralErrors.DuplicateValues(result.Errors.ToString()).ToErrors();
         
         await _userManager.AddToRoleAsync(user, "Admin");
 
