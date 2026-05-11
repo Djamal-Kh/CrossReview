@@ -78,7 +78,7 @@ public class ProjectController : ControllerBase
     // подумай над GetProjectUseCase
     [HttpGet]
     [Route("all")]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllNotWorking(CancellationToken cancellationToken)
     {
         return StatusCode(500);
     }

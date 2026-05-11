@@ -48,7 +48,7 @@ public class JwtProvider : IJwtProvider
             claims: claims,
             expires: DateTime.UtcNow.AddHours(_jwtOptions.ExpiresHours),
             signingCredentials: signingCredentials);
-
+        
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

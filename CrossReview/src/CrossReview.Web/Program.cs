@@ -1,8 +1,13 @@
+using System;
 using CrossReview;
 using Crossreview.Infrastructure.Identity;
 using CrossReview.Infrastructure.Postgres;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 

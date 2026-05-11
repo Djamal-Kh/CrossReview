@@ -1,10 +1,13 @@
 ﻿using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
+using CrossReview.Application.User.UseCases.Login;
 using CrossReview.Application.User.UseCases.Register;
 using CrossReview.Application.User.UseCases.RegisterAdmin;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using LoginRequest = CrossReview.Application.User.UseCases.Login.LoginRequest;
 
 namespace CrossReview.User;
 
@@ -17,19 +20,22 @@ public class UserController : ControllerBase
     private readonly GetUserByEmailUseCase _getUserByEmailUseCase;
     private readonly GetUserByIdUseCase _getUserByIdUseCase;
     private readonly RegisterAdminUseCase _registerAdminUseCase;
+    private readonly LoginUseCase _loginUseCase;
 
     public UserController(
         RegisterUserUseCase registerUserUseCase,
         DeleteUserUseCase deleteUserUseCase, 
         GetUserByEmailUseCase getUserByEmailUseCase, 
         GetUserByIdUseCase getUserByIdUseCase,
-        RegisterAdminUseCase registerAdminUseCase)
+        RegisterAdminUseCase registerAdminUseCase, 
+        LoginUseCase loginUseCase)
     {
         _registerUserUseCase = registerUserUseCase;
         _deleteUserUseCase = deleteUserUseCase;
         _getUserByEmailUseCase = getUserByEmailUseCase;
         _getUserByIdUseCase = getUserByIdUseCase;
         _registerAdminUseCase = registerAdminUseCase;
+        _loginUseCase = loginUseCase;
     }
 
     [HttpPost]
@@ -79,6 +85,23 @@ public class UserController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
 
+        return Ok(result.Value);
+    }
+
+    [HttpPost]
+    [Route("login")]
+    public async Task<IActionResult> Login(
+        string email,
+        string password,
+        CancellationToken cancellationToken)
+    {
+        var request = new LoginRequest(email, password);
+
+        var result = await _loginUseCase.Execute(request, cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+        
         return Ok(result.Value);
     }
     
