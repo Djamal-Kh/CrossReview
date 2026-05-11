@@ -43,7 +43,9 @@ using CrossReview.Application.Template.UseCases.UpdateTemplateTitle;
 using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
+using CrossReview.Application.User.UseCases.Login;
 using CrossReview.Application.User.UseCases.Register;
+using CrossReview.Application.User.UseCases.RegisterAdmin;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -109,6 +111,15 @@ public static class DependencyInjection
         services.AddScoped<DeleteUserUseCase>();
         services.AddScoped<GetUserByEmailUseCase>();
         services.AddScoped<GetUserByIdUseCase>();
+        
+        
+        // User
+        services.AddScoped<DeleteUserUseCase>();
+        services.AddScoped<GetUserByEmailUseCase>();
+        services.AddScoped<GetUserByIdUseCase>();
+        services.AddScoped<LoginUseCase>();
+        services.AddScoped<RegisterUserUseCase>();
+        services.AddScoped<RegisterAdminUseCase>();
         
         return services;
     }
