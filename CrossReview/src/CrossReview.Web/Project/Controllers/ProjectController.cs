@@ -5,6 +5,7 @@ using CrossReview.Application.Project.UseCases.StartProject;
 using CrossReview.Application.Project.UseCases.UpdateProjectData;
 using CrossReview.Application.Project.UseCases.UpdateProjectDescription;
 using CrossReview.Application.Project.UseCases.UpdateProjectTitle;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.Project.Controllers;
@@ -41,6 +42,7 @@ public class ProjectController : ControllerBase
 
     [HttpPost]
     [Route("create")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(
         string title, 
         string description, 
@@ -58,6 +60,7 @@ public class ProjectController : ControllerBase
 
     [HttpGet]
     [Route("{id:guid}")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Get(
         Guid id, 
         CancellationToken cancellationToken)
@@ -82,6 +85,7 @@ public class ProjectController : ControllerBase
 
     [HttpPatch]
     [Route("{id:guid}/start")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Start(
         Guid id,
         CancellationToken cancellationToken)
@@ -98,6 +102,7 @@ public class ProjectController : ControllerBase
 
     [HttpPut]
     [Route("{id:guid}/update)")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(
         Guid id,
         string title,
@@ -115,6 +120,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPatch]
+    [Authorize(Roles = "Admin")]
     [Route("{id:guid}/update/description")]
     public async Task<IActionResult> UpdateDescription(
         Guid id,
@@ -133,6 +139,7 @@ public class ProjectController : ControllerBase
 
     [HttpPatch]
     [Route("{id:guid}/update/title")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateTitle(
         Guid id,
         string title,
@@ -150,6 +157,7 @@ public class ProjectController : ControllerBase
     
     [HttpDelete]
     [Route("{id:guid}/close")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Close(
         Guid id,
         CancellationToken cancellationToken)

@@ -45,7 +45,7 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<CrossReviewDbContext>()
             .AddDefaultTokenProviders();
-
+        
         services
             .Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
         

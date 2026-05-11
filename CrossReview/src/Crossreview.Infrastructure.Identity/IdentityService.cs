@@ -1,6 +1,7 @@
 ﻿using CrossReview.Application.User;
 using CrossReview.Application.User.DTO;
-using CrossReview.Application.User.UseCases.CreateUser__Register_;
+using CrossReview.Application.User.UseCases.Register;
+using CrossReview.Application.User.UseCases.RegisterAdmin;
 using Microsoft.AspNetCore.Identity;
 
 namespace Crossreview.Infrastructure.Identity;
@@ -41,7 +42,7 @@ public class IdentityService : IIdentityService
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
-    public async Task<UserIdentityResult?> Register(RegisterUserRequest request)
+    public async Task<UserIdentityResult?> RegisterUser(RegisterUserRequest request)
     {
         var user = new AppUser
         {
@@ -60,6 +61,36 @@ public class IdentityService : IIdentityService
         }
         
         await _userManager.AddToRoleAsync(user, "User");
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new UserIdentityResult
+        {
+            Id = user.Id,
+            Email = user.Email!,
+            Roles = roles.ToList()
+        };
+    }
+
+    public async Task<UserIdentityResult?> RegisterAdmin(RegisterAdminRequest request)
+    {
+        var user = new AppUser
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName
+        };
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"User creation failed: {errors}");
+        }
+        
+        await _userManager.AddToRoleAsync(user, "Admin");
 
         var roles = await _userManager.GetRolesAsync(user);
 

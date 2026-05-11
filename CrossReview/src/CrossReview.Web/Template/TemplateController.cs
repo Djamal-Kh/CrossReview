@@ -7,6 +7,7 @@ using CrossReview.Application.Template.UseCases.RemoveQuestionFromTemplate;
 using CrossReview.Application.Template.UseCases.ReorderQuestions;
 using CrossReview.Application.Template.UseCases.UpdateQuestionInTemplate;
 using CrossReview.Application.Template.UseCases.UpdateTemplateTitle;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.Template;
@@ -49,6 +50,7 @@ public class TemplateController : ControllerBase
 
     [HttpPost]
     [Route("create")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(
         Guid projectId,
         string title,
@@ -66,6 +68,7 @@ public class TemplateController : ControllerBase
     
     [HttpPatch]
     [Route("activate")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Activate(
         Guid templateId,
         CancellationToken cancellationToken)
@@ -82,6 +85,7 @@ public class TemplateController : ControllerBase
 
     [HttpPatch]
     [Route("question/add")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddQuestion(
         Guid templateId,
         string title,
@@ -100,6 +104,7 @@ public class TemplateController : ControllerBase
 
     [HttpPatch]
     [Route("deactivate")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Deactivate(
         Guid templateId,
         CancellationToken cancellationToken)
@@ -116,6 +121,7 @@ public class TemplateController : ControllerBase
 
     [HttpPatch]
     [Route("question/reorder")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Reorder(
         Guid templateId,
         CancellationToken cancellationToken)
@@ -132,6 +138,7 @@ public class TemplateController : ControllerBase
 
     [HttpPatch]
     [Route("update-title")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateTitle(
         Guid templateId,
         string title,
@@ -149,6 +156,7 @@ public class TemplateController : ControllerBase
     
     [HttpPut]
     [Route("question/update")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateQuestion(
         Guid templateId,
         Guid questionId,
@@ -168,6 +176,7 @@ public class TemplateController : ControllerBase
     
     [HttpDelete]
     [Route("delete")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(
         Guid templateId,
         CancellationToken cancellationToken)
@@ -184,6 +193,7 @@ public class TemplateController : ControllerBase
     
     [HttpDelete]
     [Route("question/remove")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RemoveQuestion(
         Guid templateId,
         Guid questionId,

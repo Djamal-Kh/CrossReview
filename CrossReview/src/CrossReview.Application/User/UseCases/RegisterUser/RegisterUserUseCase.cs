@@ -1,11 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.User.UseCases.CreateUser__Register_;
+namespace CrossReview.Application.User.UseCases.Register;
 
 public class RegisterUserUseCase
 {
@@ -33,13 +32,8 @@ public class RegisterUserUseCase
         if (!validationResult.IsValid)
             return validationResult.ToList();
         
-        var userId = await _identityService.Register(request);
+        var user = await _identityService.RegisterUser(request);
 
-        if (userId is null)
-            return GeneralErrors.Failure("User creation failed").ToErrors();
-
-        var user = await _identityService.Register(request);
-        
         if (user is null)
             return GeneralErrors.Failure("User creation failed").ToErrors();
         

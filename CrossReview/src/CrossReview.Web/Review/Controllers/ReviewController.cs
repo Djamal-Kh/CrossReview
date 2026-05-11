@@ -8,6 +8,7 @@ using CrossReview.Application.Review.UseCases.GetReviewsForUser;
 using CrossReview.Application.Review.UseCases.RemoveAnswerFromReview;
 using CrossReview.Application.Review.UseCases.SubmitReview;
 using CrossReview.Application.Review.UseCases.UpdateAnswerInReview;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.Review.Controllers;
@@ -50,6 +51,7 @@ public class ReviewController : ControllerBase
     
     [HttpPost]
     [Route("create")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(
         Guid reviewerId,
         Guid revieweeId,
@@ -70,6 +72,7 @@ public class ReviewController : ControllerBase
     
     [HttpPost]
     [Route("answer/add")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddAnswer(
         Guid reviewId, 
         Guid questionId,
@@ -90,6 +93,7 @@ public class ReviewController : ControllerBase
     // А так ли было запланировано ?
     [HttpGet]
     [Route("id")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetByIdOrParameters(
         Guid id,
         CancellationToken cancellationToken)
@@ -106,6 +110,7 @@ public class ReviewController : ControllerBase
 
     [HttpGet]
     [Route("by-parameters")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetForProjectAndPeriod(
         Guid projectId,
         Guid revieweeId,
@@ -125,6 +130,7 @@ public class ReviewController : ControllerBase
 
     [HttpGet]
     [Route("by-reviewers")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetForUser(
         Guid userId,
         Guid projectId,
@@ -143,6 +149,7 @@ public class ReviewController : ControllerBase
     
     [HttpPatch]
     [Route("close")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Close(
         Guid reviewId,
         CancellationToken cancellationToken)
@@ -159,6 +166,7 @@ public class ReviewController : ControllerBase
 
     [HttpPatch]
     [Route("answer/remove")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RemoveAnswer(
         Guid reviewId,
         Guid questionId,
@@ -176,6 +184,7 @@ public class ReviewController : ControllerBase
 
     [HttpPatch]
     [Route("submit")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Submit(
         Guid reviewId,
         Guid templateId,
@@ -193,6 +202,7 @@ public class ReviewController : ControllerBase
 
     [HttpPatch]
     [Route("answer/update")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateAnswer(
         Guid reviewId,
         Guid questionId,

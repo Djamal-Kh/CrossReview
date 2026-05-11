@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.RemoveEmployee;
+namespace CrossReview.Application.Project.UseCases.RemoveProjectMember;
 
 public class RemoveProjectMemberUseCase 
 {
