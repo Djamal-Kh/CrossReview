@@ -3,8 +3,9 @@ using CrossReview.Application.Project.UseCases.ChangeProjectMemberRole;
 using CrossReview.Application.Project.UseCases.DeactivateProjectMember;
 using CrossReview.Application.Project.UseCases.GetProjectMemberById;
 using CrossReview.Application.Project.UseCases.GetProjectMembers;
-using CrossReview.Application.Project.UseCases.RemoveEmployee;
+using CrossReview.Application.Project.UseCases.RemoveProjectMember;
 using CrossReview.Domain.Project;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.Project.Controllers;
@@ -38,6 +39,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpPost]
     [Route("add")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add(
         Guid userId,
         EnumProjectRole role,
@@ -56,6 +58,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpGet]
     [Route("project/{projectId:guid}")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetProjectMembers(
         Guid projectId,
         CancellationToken cancellationToken)
@@ -72,6 +75,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpGet]
     [Route("by-id")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetProjectMemberById(
         [FromRoute] Guid projectId,
         [FromRoute] Guid userId,
@@ -89,6 +93,7 @@ public class ProjectMemberController : ControllerBase
     
     [HttpPatch]
     [Route("update-role")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateRole(
         Guid userId,
         EnumProjectRole role,
@@ -107,6 +112,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpPatch]
     [Route("deactivate-member")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Deactivate(
         Guid projectId,
         Guid userId,
@@ -124,6 +130,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpDelete]
     [Route("remove-member")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Remove(
         Guid projectId,
         Guid userId,

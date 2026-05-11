@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CrossReview.Application\CrossReview.Application.csproj" />
+      <ProjectReference Include="..\Crossreview.Infrastructure.Identity\Crossreview.Infrastructure.Identity.csproj" />
       <ProjectReference Include="..\CrossReview.Infrastructure.Postgres\CrossReview.Infrastructure.Postgres.csproj" />
     </ItemGroup>
 

@@ -2,6 +2,7 @@
 using CrossReview.Application.Project.UseCases.ArchiveReviewPeriod;
 using CrossReview.Application.Project.UseCases.CloseReviewPeriod;
 using CrossReview.Application.Project.UseCases.UpdateReviewPeriodDates;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.Project.Controllers;
@@ -29,6 +30,7 @@ public class ReviewPeriodController : ControllerBase
     
     [HttpPost]
     [Route("create")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(
         Guid projectId,
         DateTime startDate,
@@ -47,6 +49,7 @@ public class ReviewPeriodController : ControllerBase
 
     [HttpPatch]
     [Route("close")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Close(
         Guid projectId,
         Guid periodId,
@@ -64,6 +67,7 @@ public class ReviewPeriodController : ControllerBase
     
     [HttpPatch]
     [Route("archive")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Archive(
         Guid projectId,
         Guid periodId,
@@ -81,6 +85,7 @@ public class ReviewPeriodController : ControllerBase
     
     [HttpPatch]
     [Route("update")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateDates(
         Guid projectId,
         Guid periodId,

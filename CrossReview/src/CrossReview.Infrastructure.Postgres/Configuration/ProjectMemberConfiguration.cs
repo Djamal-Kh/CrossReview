@@ -1,5 +1,5 @@
 ﻿using CrossReview.Domain.Project;
-using CrossReview.Domain.User;
+using Crossreview.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -36,14 +36,14 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
         builder.Property(pm => pm.LeftAt)
             .HasColumnName("left_at");
         
-        builder.HasOne<UserEntity>()
-            .WithMany()
-            .HasForeignKey(pm => pm.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        
         builder.HasOne<ProjectEntity>()
             .WithMany(p => p.Members)
             .HasForeignKey(pm => pm.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(pm => pm.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

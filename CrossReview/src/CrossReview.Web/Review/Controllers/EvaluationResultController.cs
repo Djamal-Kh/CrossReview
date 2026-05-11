@@ -1,6 +1,7 @@
 ﻿using CrossReview.Application.Review.UseCases.CalculateEvaluationResult;
 using CrossReview.Application.Review.UseCases.GetEvaluationResult;
 using CrossReview.Application.Review.UseCases.RecalculateEvaluationResult;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.Review.Controllers;
@@ -25,6 +26,7 @@ public class EvaluationResultController : ControllerBase
 
     [HttpPost]
     [Route("calculate")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Calculate(
         Guid userId,
         Guid projectId,
@@ -42,6 +44,7 @@ public class EvaluationResultController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Get(
         Guid userId,
         Guid projectId,
@@ -60,6 +63,7 @@ public class EvaluationResultController : ControllerBase
 
     [HttpPatch]
     [Route("recalculate")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Recalculate(
         Guid evaluationResultId,
         CancellationToken cancellationToken)

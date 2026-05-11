@@ -1,29 +1,29 @@
 ﻿using CrossReview.Domain.Project;
 using CrossReview.Domain.Review;
 using CrossReview.Domain.Template;
-using CrossReview.Domain.User;
+using Crossreview.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrossReview.Infrastructure.Postgres;
 
-public class CrossReviewDbContext(DbContextOptions<CrossReviewDbContext> options) : DbContext(options)
+public class CrossReviewDbContext
+    : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql();
-    }
+    public CrossReviewDbContext(DbContextOptions<CrossReviewDbContext> options)
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CrossReviewDbContext).Assembly);
     }
-    
-    public DbSet<UserEntity> Users { get; set; }
-    
+
     public DbSet<ProjectEntity> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<ReviewPeriod> ReviewPeriods { get; set; }
-    
     public DbSet<ReviewEntity> Reviews { get; set; }
     public DbSet<TemplateEntity> ReviewTemplates { get; set; }
     public DbSet<ReviewAnswer> ReviewAnswers { get; set; } 

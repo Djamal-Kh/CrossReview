@@ -6,12 +6,12 @@ using CrossReview.Application.Project.UseCases.CloseProject;
 using CrossReview.Application.Project.UseCases.CloseReviewPeriod;
 using CrossReview.Application.Project.UseCases.CreateProject;
 using CrossReview.Application.Project.UseCases.DeactivateProjectMember;
-using CrossReview.Application.Project.UseCases.DeleteProject;
+using CrossReview.Application.Project.UseCases.DeleteProject_maybeDelete;
 using CrossReview.Application.Project.UseCases.GetProjectById;
 using CrossReview.Application.Project.UseCases.GetProjectMemberById;
 using CrossReview.Application.Project.UseCases.GetProjectMembers;
 using CrossReview.Application.Project.UseCases.GetProjects;
-using CrossReview.Application.Project.UseCases.RemoveEmployee;
+using CrossReview.Application.Project.UseCases.RemoveProjectMember;
 using CrossReview.Application.Project.UseCases.StartProject;
 using CrossReview.Application.Project.UseCases.UpdateProjectData;
 using CrossReview.Application.Project.UseCases.UpdateProjectDescription;
@@ -40,10 +40,12 @@ using CrossReview.Application.Template.UseCases.RemoveQuestionFromTemplate;
 using CrossReview.Application.Template.UseCases.ReorderQuestions;
 using CrossReview.Application.Template.UseCases.UpdateQuestionInTemplate;
 using CrossReview.Application.Template.UseCases.UpdateTemplateTitle;
-using CrossReview.Application.User.UseCases.CreateUser__Register_;
 using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
+using CrossReview.Application.User.UseCases.Login;
+using CrossReview.Application.User.UseCases.Register;
+using CrossReview.Application.User.UseCases.RegisterAdmin;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -105,10 +107,19 @@ public static class DependencyInjection
         services.AddScoped<ReorderQuestionsUseCase>();
         services.AddScoped<UpdateQuestionUseCase>();
         services.AddScoped<UpdateTemplateTitleUseCase>();
-        services.AddScoped<CreateUserUseCase>();
+        services.AddScoped<RegisterUserUseCase>();
         services.AddScoped<DeleteUserUseCase>();
         services.AddScoped<GetUserByEmailUseCase>();
         services.AddScoped<GetUserByIdUseCase>();
+        
+        
+        // User
+        services.AddScoped<DeleteUserUseCase>();
+        services.AddScoped<GetUserByEmailUseCase>();
+        services.AddScoped<GetUserByIdUseCase>();
+        services.AddScoped<LoginUseCase>();
+        services.AddScoped<RegisterUserUseCase>();
+        services.AddScoped<RegisterAdminUseCase>();
         
         return services;
     }

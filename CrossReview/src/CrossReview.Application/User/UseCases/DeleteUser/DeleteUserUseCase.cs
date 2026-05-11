@@ -7,27 +7,24 @@ namespace CrossReview.Application.User.UseCases.DeleteUser;
 public class DeleteUserUseCase
 {
     private readonly ILogger<DeleteUserUseCase> _logger;
-    private readonly IUserRepository _userRepository;
-    
+    private readonly IIdentityService _identityService;
+
     public DeleteUserUseCase(
-        ILogger<DeleteUserUseCase> logger,
-        IUserRepository userRepository)
+        ILogger<DeleteUserUseCase> logger, IIdentityService identityService)
     {
         _logger = logger;
-        _userRepository = userRepository;
+        _identityService = identityService;
     }
 
-    public async Task<Result<Guid, Errors>> Execute(DeleteUserRequest request, CancellationToken cancellationToken)
+    public async Task<UnitResult<Errors>> Execute(DeleteUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
+        var isSuccess = await _identityService.Delete(request.UserId);
 
-        if (user is null)
+        if (!isSuccess)
             return GeneralErrors.NotFound(request.UserId).ToErrors();
 
-        var result = await _userRepository.DeleteAsync(user);
-        
-        _logger.LogInformation("User {UserId} was deleted", user.Id);
+        _logger.LogInformation("User {UserId} was deleted", request.UserId);
 
-        return result;
+        return UnitResult.Success<Errors>();
     }
 }

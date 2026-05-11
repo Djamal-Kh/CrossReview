@@ -1,8 +1,9 @@
-﻿using CrossReview.Application.User.UseCases.CreateUser__Register_;
-using CrossReview.Application.User.UseCases.DeleteUser;
+﻿using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
-using CrossReview.Domain.User;
+using CrossReview.Application.User.UseCases.Register;
+using CrossReview.Application.User.UseCases.RegisterAdmin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossReview.User;
@@ -11,68 +12,96 @@ namespace CrossReview.User;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly CreateUserUseCase _createUserUseCase;
+    private readonly RegisterUserUseCase _registerUserUseCase;
     private readonly DeleteUserUseCase _deleteUserUseCase;
     private readonly GetUserByEmailUseCase _getUserByEmailUseCase;
     private readonly GetUserByIdUseCase _getUserByIdUseCase;
-    
+    private readonly RegisterAdminUseCase _registerAdminUseCase;
+
     public UserController(
-        CreateUserUseCase createUserUseCase,
+        RegisterUserUseCase registerUserUseCase,
         DeleteUserUseCase deleteUserUseCase, 
         GetUserByEmailUseCase getUserByEmailUseCase, 
-        GetUserByIdUseCase getUserByIdUseCase)
+        GetUserByIdUseCase getUserByIdUseCase,
+        RegisterAdminUseCase registerAdminUseCase)
     {
-        _createUserUseCase = createUserUseCase;
+        _registerUserUseCase = registerUserUseCase;
         _deleteUserUseCase = deleteUserUseCase;
         _getUserByEmailUseCase = getUserByEmailUseCase;
         _getUserByIdUseCase = getUserByIdUseCase;
+        _registerAdminUseCase = registerAdminUseCase;
     }
 
     [HttpPost]
-    [Route("create")]
-    public async Task<IActionResult> Create(
+    [Route("register")]
+    public async Task<IActionResult> Register(
         string firstName,
         string lastName,
         string email,
         string password,
         string phoneNumber,
-        EnumUserRole? role,
         CancellationToken cancellationToken)
     {
-        var request = new CreateUserRequest(
+        var request = new RegisterUserRequest(
             firstName, 
             lastName, 
             email, 
             password,
-            phoneNumber,
-            role ?? EnumUserRole.User);
+            phoneNumber);
 
-        var result = await _createUserUseCase.Execute(request, cancellationToken);
-        
+        var result = await _registerUserUseCase.Execute(request, cancellationToken);
+
         if (result.IsFailure)
             return BadRequest(result.Error);
-        
+
         return Ok(result.Value);
     }
 
+    [HttpPost]
+    [Route("add-admin")]
+    [Authorize(Roles =  "Admin")]
+    public async Task<IActionResult> AddAdmin(string firstName,
+        string lastName,
+        string email,
+        string password,
+        string phoneNumber,
+        CancellationToken cancellationToken)
+    {
+        var request = new RegisterAdminRequest(
+            firstName, 
+            lastName, 
+            email, 
+            password,
+            phoneNumber);
+
+        var result = await _registerAdminUseCase.Execute(request, cancellationToken);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
+    
     [HttpGet]
     [Route("{email}")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetByEmail(
         string email,
         CancellationToken cancellationToken)
     {
         var request = new GetUserByEmailRequest(email);
-        
+
         var result = await _getUserByEmailUseCase.Execute(request, cancellationToken);
-        
+
         if (result.IsFailure)
             return BadRequest(result.Error);
-        
+
         return Ok(result.Value);
     }
 
     [HttpGet]
     [Route("{userId}")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetById(
         Guid userId,
         CancellationToken cancellationToken)
@@ -89,6 +118,7 @@ public class UserController : ControllerBase
     
     [HttpDelete]
     [Route("delete")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(
         Guid userId,
         CancellationToken cancellationToken)
@@ -100,6 +130,6 @@ public class UserController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
         
-        return Ok(result.Value);
+        return Ok();
     }
 }
