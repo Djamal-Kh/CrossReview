@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace CrossReview.Application.Project.UseCases.RemoveProjectMember;
+namespace CrossReview.Application.Project.UseCases.DeactivateProjectMember;
 
-public class RemoveProjectMemberValidator : AbstractValidator<RemoveProjectMemberRequest>
+public class DeactivateProjectMemberValidator : AbstractValidator<DeactivateProjectMemberRequest>
 {
-    public RemoveProjectMemberValidator()
+    public DeactivateProjectMemberValidator()
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()

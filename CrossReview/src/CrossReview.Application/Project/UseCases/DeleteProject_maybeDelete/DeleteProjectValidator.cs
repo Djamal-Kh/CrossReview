@@ -6,6 +6,8 @@ public class DeleteProjectValidator : AbstractValidator<DeleteProjectRequest>
 {
     public DeleteProjectValidator()
     {
-        
+        RuleFor(x => x.ProjectId)
+            .NotEmpty()
+            .WithMessage("Project ID is required");
     }
 }

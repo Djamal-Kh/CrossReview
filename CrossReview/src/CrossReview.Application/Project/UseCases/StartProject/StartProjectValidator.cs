@@ -6,6 +6,8 @@ public class StartProjectValidator : AbstractValidator<StartProjectRequest>
 {
     public StartProjectValidator()
     {
-        
+        RuleFor(x => x.ProjectId)
+            .NotEmpty()
+            .WithMessage("Project ID is required");
     }
 }
