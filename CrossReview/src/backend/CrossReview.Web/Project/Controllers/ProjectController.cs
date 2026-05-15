@@ -1,6 +1,8 @@
 ﻿using CrossReview.Application.Project.UseCases.CloseProject;
 using CrossReview.Application.Project.UseCases.CreateProject;
 using CrossReview.Application.Project.UseCases.GetProjectById;
+using CrossReview.Application.Project.UseCases.GetProjects;
+using CrossReview.Application.Project.UseCases.GetProjectsByUserId;
 using CrossReview.Application.Project.UseCases.StartProject;
 using CrossReview.Application.Project.UseCases.UpdateProjectData;
 using CrossReview.Application.Project.UseCases.UpdateProjectDescription;
@@ -21,6 +23,8 @@ public class ProjectController : ControllerBase
     private readonly UpdateProjectUseCase _updateProjectUseCase;
     private readonly UpdateProjectDescriptionUseCase _updateProjectDescriptionUseCase;
     private readonly UpdateProjectTitleUseCase _updateProjectTitleUseCase;
+    private readonly GetProjectsByUserIdUseCase _getProjectsByUserIdUseCase;
+    private readonly GetProjectsUseCase _getProjectsUseCase;
     
     public ProjectController(
         CloseProjectUseCase closeProjectUseCase, 
@@ -29,7 +33,9 @@ public class ProjectController : ControllerBase
         StartProjectUseCase startProjectUseCase, 
         UpdateProjectUseCase updateProjectUseCase, 
         UpdateProjectDescriptionUseCase updateProjectDescriptionUseCase, 
-        UpdateProjectTitleUseCase updateProjectTitleUseCase)
+        UpdateProjectTitleUseCase updateProjectTitleUseCase, 
+        GetProjectsByUserIdUseCase getProjectsByUserIdUseCase, 
+        GetProjectsUseCase getProjectsUseCase)
     {
         _closeProjectUseCase = closeProjectUseCase;
         _createProjectUseCase = createProjectUseCase;
@@ -38,6 +44,8 @@ public class ProjectController : ControllerBase
         _updateProjectUseCase = updateProjectUseCase;
         _updateProjectDescriptionUseCase = updateProjectDescriptionUseCase;
         _updateProjectTitleUseCase = updateProjectTitleUseCase;
+        _getProjectsByUserIdUseCase = getProjectsByUserIdUseCase;
+        _getProjectsUseCase = getProjectsUseCase;
     }
 
     [HttpPost]
@@ -74,15 +82,37 @@ public class ProjectController : ControllerBase
         
         return Ok(result.Value);
     }
-
-    // подумай над GetProjectUseCase
+    
     [HttpGet]
     [Route("all")]
-    public async Task<IActionResult> GetAllNotWorking(CancellationToken cancellationToken)
+    [Authorize]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        return StatusCode(500);
+        var result = await _getProjectsUseCase.Execute(cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+        
+        return Ok(result.Value);
     }
-
+    
+    [HttpGet]
+    [Route("all/{id}")]
+    [Authorize]
+    public async Task<IActionResult> GetAllById(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var request = new GetProjectsByUserIdRequest(userId);
+        
+        var result = await _getProjectsByUserIdUseCase.Execute(request, cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+        
+        return Ok(result.Value);
+    }
+    
     [HttpPatch]
     [Route("{id:guid}/start")]
     [Authorize(Roles = "Admin")]

@@ -1,6 +1,6 @@
 ﻿using CrossReview.Application.User.DTO;
-using CrossReview.Application.User.UseCases.Register;
 using CrossReview.Application.User.UseCases.RegisterAdmin;
+using CrossReview.Application.User.UseCases.RegisterUser;
 using CSharpFunctionalExtensions;
 using Shared.Common.ResultPattern;
 

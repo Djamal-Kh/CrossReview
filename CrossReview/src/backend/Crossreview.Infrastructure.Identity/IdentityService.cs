@@ -1,7 +1,7 @@
 ﻿using CrossReview.Application.User;
 using CrossReview.Application.User.DTO;
-using CrossReview.Application.User.UseCases.Register;
 using CrossReview.Application.User.UseCases.RegisterAdmin;
+using CrossReview.Application.User.UseCases.RegisterUser;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Identity;
 using Shared.Common.ResultPattern;

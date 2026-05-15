@@ -11,9 +11,11 @@ public class GetUserByIdUseCase
     private readonly IIdentityService _identityService;
 
     public GetUserByIdUseCase(
-        ILogger<GetUserByIdUseCase> logger)
+        ILogger<GetUserByIdUseCase> logger, 
+        IIdentityService identityService)
     {
         _logger = logger;
+        _identityService = identityService;
     }
 
     public async Task<Result<UserDto, Errors>> Execute(GetUserByIdRequest request, CancellationToken cancellationToken)

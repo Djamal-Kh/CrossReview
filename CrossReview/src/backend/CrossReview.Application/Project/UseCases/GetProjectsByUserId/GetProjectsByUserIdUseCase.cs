@@ -1,28 +1,24 @@
 ﻿using CrossReview.Application.Project.DTOs;
 using CrossReview.Domain.Project;
 using CSharpFunctionalExtensions;
-using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
 
-namespace CrossReview.Application.Project.UseCases.GetProjects;
+namespace CrossReview.Application.Project.UseCases.GetProjectsByUserId;
 
-public class GetProjectsUseCase
+public class GetProjectsByUserIdUseCase
 {
-    private readonly ILogger<GetProjectsUseCase> _logger;
-    private readonly IProjectRepository _repository;
+    private readonly IProjectRepository _projectRepository;
     
-    public GetProjectsUseCase(
-        ILogger<GetProjectsUseCase> logger, 
-        IProjectRepository repository)
+    public GetProjectsByUserIdUseCase(IProjectRepository projectRepository)
     {
-        _logger = logger;
-        _repository = repository;
+        _projectRepository = projectRepository;
     }
 
-    public async Task<Result<List<ProjectListItemDto>, Errors>> Execute(CancellationToken cancellationToken)
+    public async Task<Result<List<ProjectListItemDto>, Errors>> Execute(GetProjectsByUserIdRequest request,
+        CancellationToken cancellationToken)
     {
-        var projects = await _repository.GetAllAsync(cancellationToken);
-
+        var projects = await _projectRepository.GetAllAsyncById(request.UserId, cancellationToken);
+        
         if (projects.Count == 0)
             return GeneralErrors.CollectionEmpty().ToErrors();
 

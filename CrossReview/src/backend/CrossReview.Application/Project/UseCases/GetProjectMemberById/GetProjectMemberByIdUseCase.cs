@@ -1,4 +1,5 @@
-﻿using CrossReview.Domain.Project;
+﻿using CrossReview.Application.Project.DTOs;
+using CrossReview.Domain.Project;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
@@ -18,7 +19,7 @@ public class GetProjectMemberByIdUseCase
         _repository = repository;
     }
 
-    public async Task<Result<ProjectMember, Errors>> Execute(GetProjectMemberByIdRequest request,
+    public async Task<Result<ProjectMemberDto, Errors>> Execute(GetProjectMemberByIdRequest request,
         CancellationToken cancellationToken)
     {
         var project = await _repository.GetByIdAsync(request.ProjectId, cancellationToken);
@@ -32,7 +33,16 @@ public class GetProjectMemberByIdUseCase
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
 
         _logger.LogInformation("ProjectMember {UserId} was founded", member.UserId);
+
+        var result = new ProjectMemberDto
+        {
+            UserId = member.UserId,
+            Role = member.Role,
+            IsActive = member.IsActive,
+            JoinedAt = member.JoinedAt,
+            LeftAt = member.LeftAt
+        };
         
-        return member;
+        return result;
     }
 }

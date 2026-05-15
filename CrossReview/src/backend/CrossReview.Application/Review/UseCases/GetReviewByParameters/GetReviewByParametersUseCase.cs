@@ -1,4 +1,5 @@
-﻿using CrossReview.Domain.Review;
+﻿using CrossReview.Application.Review.DTOs;
+using CrossReview.Domain.Review;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
@@ -18,14 +19,34 @@ public class GetReviewByParametersUseCase
         _reviewRepository = reviewRepository;
     }
 
-    public async Task<Result<ReviewEntity, Errors>> Execute(GetReviewByParametersRequest request,
+    public async Task<Result<ReviewDto, Errors>> Execute(GetReviewByParametersRequest request,
         CancellationToken cancellationToken)
     {
         var review = await _reviewRepository.GetByIdAsync(request.Id, cancellationToken);
         
         if (review is null)
             return GeneralErrors.NotFound(request.Id).ToErrors();
+
+        var answerDtos = review.Answers
+            .Select(r => new ReviewAnswerDto
+        {
+            QuestionId = r.QuestionId,
+            Score = r.Score,
+            Comment = r.Comment,
+        }).ToList();
         
-        return review;
+        var result = new ReviewDto
+        {
+            Id =  review.Id,
+            ReviewerId = review.ReviewerId,
+            RevieweeId = review.RevieweeId,
+            ProjectId = review.ProjectId,
+            TemplateId = review.TemplateId,
+            PeriodId = review.PeriodId,
+            Status = review.Status,
+            Answers = answerDtos
+        };
+        
+        return result;
     }
 }

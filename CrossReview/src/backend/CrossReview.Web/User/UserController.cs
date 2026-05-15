@@ -1,9 +1,10 @@
 ﻿using CrossReview.Application.User.UseCases.DeleteUser;
+using CrossReview.Application.User.UseCases.GetCurrentUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
 using CrossReview.Application.User.UseCases.Login;
-using CrossReview.Application.User.UseCases.Register;
 using CrossReview.Application.User.UseCases.RegisterAdmin;
+using CrossReview.Application.User.UseCases.RegisterUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ public class UserController : ControllerBase
     private readonly GetUserByIdUseCase _getUserByIdUseCase;
     private readonly RegisterAdminUseCase _registerAdminUseCase;
     private readonly LoginUseCase _loginUseCase;
+    private readonly GetCurrentUserUseCase _getCurrentUserUseCase;
 
     public UserController(
         RegisterUserUseCase registerUserUseCase,
@@ -28,7 +30,8 @@ public class UserController : ControllerBase
         GetUserByEmailUseCase getUserByEmailUseCase, 
         GetUserByIdUseCase getUserByIdUseCase,
         RegisterAdminUseCase registerAdminUseCase, 
-        LoginUseCase loginUseCase)
+        LoginUseCase loginUseCase,
+        GetCurrentUserUseCase getCurrentUserUseCase)
     {
         _registerUserUseCase = registerUserUseCase;
         _deleteUserUseCase = deleteUserUseCase;
@@ -36,6 +39,7 @@ public class UserController : ControllerBase
         _getUserByIdUseCase = getUserByIdUseCase;
         _registerAdminUseCase = registerAdminUseCase;
         _loginUseCase = loginUseCase;
+        _getCurrentUserUseCase = getCurrentUserUseCase;
     }
 
     [HttpPost]
@@ -121,7 +125,7 @@ public class UserController : ControllerBase
 
         return Ok(result.Value);
     }
-
+    
     [HttpGet]
     [Route("{userId}")]
     [Authorize(Roles = "User, Admin")]
@@ -136,6 +140,19 @@ public class UserController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
         
+        return Ok(result.Value);
+    }
+    
+    [HttpGet]
+    [Route("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
+    {
+        var result = await _getCurrentUserUseCase.Execute(cancellationToken);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
         return Ok(result.Value);
     }
     
