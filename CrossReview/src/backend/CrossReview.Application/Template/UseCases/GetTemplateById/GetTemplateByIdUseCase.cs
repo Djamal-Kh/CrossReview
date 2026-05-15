@@ -1,4 +1,5 @@
-﻿using CrossReview.Domain.Template;
+﻿using CrossReview.Application.Template.DTOs;
+using CrossReview.Domain.Template;
 using CSharpFunctionalExtensions;
 using Shared.Common.ResultPattern;
 
@@ -13,7 +14,7 @@ public class GetTemplateByIdUseCase
         _templateRepository = templateRepository;
     }
 
-    public async Task<Result<TemplateEntity, Errors>> Execute(GetTemplateByIdRequest request,
+    public async Task<Result<TemplateDto, Errors>> Execute(GetTemplateByIdRequest request,
         CancellationToken cancellationToken)
     {
         var template = await _templateRepository.GetByIdAsync(request.TemplateId);
@@ -21,6 +22,23 @@ public class GetTemplateByIdUseCase
         if (template is null)
             return GeneralErrors.NotFound(request.TemplateId).ToErrors();
 
-        return template;
+        var questionDtos = template.Questions
+            .Select(q => new ReviewQuestionDto
+            {
+                Id = q.Id,
+                Title = q.Title,
+                Weight = q.Weight,
+            }).ToList();
+
+        var result = new TemplateDto
+        {
+            Id = template.Id,
+            ProjectId = template.ProjectId,
+            Title = template.Title,
+            IsActive = template.IsActive,
+            Questions = questionDtos
+        };
+        
+        return result;
     }
 }

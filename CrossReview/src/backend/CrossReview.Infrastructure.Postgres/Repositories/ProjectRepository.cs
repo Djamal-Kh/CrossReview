@@ -43,6 +43,17 @@ public class ProjectRepository(CrossReviewDbContext context) : IProjectRepositor
         return projects;
     }
 
+    public async Task<List<ProjectEntity>> GetAllAsyncById(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var projects = await context.Projects
+            .Where(p => p.Members.Any(m => m.UserId == userId))
+            .Include(p => p.Members)
+            .Include(p => p.ReviewPeriods)
+            .ToListAsync(cancellationToken);
+
+        return projects;
+    }
+
     public async Task<Guid?> DeleteAsync(ProjectEntity project, CancellationToken cancellationToken = default)
     {
         context.Projects.Remove(project);

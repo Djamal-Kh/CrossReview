@@ -44,8 +44,8 @@ using CrossReview.Application.User.UseCases.DeleteUser;
 using CrossReview.Application.User.UseCases.GetUserByEmail;
 using CrossReview.Application.User.UseCases.GetUserById;
 using CrossReview.Application.User.UseCases.Login;
-using CrossReview.Application.User.UseCases.Register;
 using CrossReview.Application.User.UseCases.RegisterAdmin;
+using CrossReview.Application.User.UseCases.RegisterUser;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
