@@ -1,4 +1,5 @@
-﻿using CrossReview.Domain.Review;
+﻿using CrossReview.Application.Review.DTOs;
+using CrossReview.Domain.Review;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
@@ -17,9 +18,7 @@ public class GetReviewsForUserUseCase
         _logger = logger;
         _reviewRepository = reviewRepository;
     }
-
-    //todo надо будет возвращать DTO для сохранения конфиденциальности 
-    public async Task<Result<List<ReviewEntity>, Errors>> Execute(GetReviewsForUserRequest request,
+    public async Task<Result<List<ReviewForRevieweeDto>, Errors>> Execute(GetReviewsForUserRequest request,
         CancellationToken cancellationToken)
     {
         var reviews = await _reviewRepository.GetAllAsync(request.UserId, request.ProjectId, request.PeriodId);
@@ -27,7 +26,13 @@ public class GetReviewsForUserUseCase
         if (!reviews.Any())
             return GeneralErrors.CollectionEmpty().ToErrors();
 
-        //todo здесь будет еще маппинг в dto
-        return reviews;
+        var result = reviews.Select(r => new ReviewForRevieweeDto
+        {
+            Id = r.Id,
+            Status = r.Status,
+            Answers = r.Answers
+        }).ToList();
+        
+        return result;
     }
 }

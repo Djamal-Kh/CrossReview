@@ -21,7 +21,7 @@ public class ReviewTemplateConfiguration : IEntityTypeConfiguration<TemplateEnti
         
         builder
             .Property(rt => rt.Id)
-            .ValueGeneratedOnAdd()
+            .ValueGeneratedNever()
             .HasColumnName("review_template_id");
 
         builder
@@ -33,14 +33,16 @@ public class ReviewTemplateConfiguration : IEntityTypeConfiguration<TemplateEnti
             .Property(rt => rt.IsActive)
             .HasColumnName("is_active")
             .IsRequired();
-
-        builder
-            .HasMany(t => t.Questions)
-            .WithOne()
-            .HasForeignKey(q => q.TemplateId);
         
         builder.HasOne<ProjectEntity>()
             .WithMany()
             .HasForeignKey(x => x.ProjectId);
+        
+        builder.HasMany(t => t.Questions)
+            .WithOne(rq => rq.Template)
+            .HasForeignKey(rq => rq.TemplateId);
+        
+        builder.Navigation(x => x.Questions)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

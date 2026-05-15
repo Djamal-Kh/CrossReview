@@ -17,6 +17,9 @@ public class ProjectMember
         LeftAt = null;
     }
     
+    // для ef core
+    private ProjectMember () {}
+    
     public Guid UserId { get; }
     public Guid ProjectId { get; private set; }
     public EnumProjectRole Role { get; private set; }
@@ -24,9 +27,9 @@ public class ProjectMember
     public DateTime JoinedAt { get; private set; } 
     public DateTime? LeftAt { get; private set; }
 
-    public static ProjectMember Create(Guid projectId, EnumProjectRole role)
+    public static ProjectMember Create(Guid userId, Guid projectId, EnumProjectRole role)
     {
-        return new ProjectMember(Guid.NewGuid(), projectId, role);
+        return new ProjectMember(userId, projectId, role);
     }
     
     public void ChangeRole(EnumProjectRole newRole)

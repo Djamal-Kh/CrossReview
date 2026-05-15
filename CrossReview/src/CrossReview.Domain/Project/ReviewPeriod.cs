@@ -20,6 +20,9 @@ public class ReviewPeriod
         Status = status;
     }
     
+    // для ef core
+    private ReviewPeriod () {}
+    
     public Guid Id { get; }
     public Guid ProjectId { get; private set; }
     public DateTime StartDate { get; private set; }

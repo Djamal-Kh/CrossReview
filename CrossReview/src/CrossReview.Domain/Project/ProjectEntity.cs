@@ -22,6 +22,9 @@ public class ProjectEntity
         _reviewPeriods = [];
     }
 
+    // для ef core
+    private ProjectEntity() { }
+    
     public Guid Id { get; }
     public string Title { get; private set; }
     public bool Status { get; private set; }
@@ -86,7 +89,7 @@ public class ProjectEntity
 
         if (member is null)
         {
-            member = ProjectMember.Create(userId, role);
+            member = ProjectMember.Create(userId, Id, role);
             
             _members.Add(member);
 

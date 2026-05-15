@@ -20,10 +20,17 @@ public class TemplateRepository(CrossReviewDbContext context) : ITemplateReposit
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<List<TemplateEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await context.ReviewTemplates.ToListAsync(cancellationToken);
+        
+        return result;
+    }
+
     public async Task<TemplateEntity?> GetByIdAsync(Guid templateId, CancellationToken cancellationToken = default)
     {
         var template = await context.ReviewTemplates
-            .AsNoTracking()
+            .Include(x => x.Questions)
             .FirstOrDefaultAsync(t => t.Id == templateId, cancellationToken);
         
         return template;
@@ -40,7 +47,6 @@ public class TemplateRepository(CrossReviewDbContext context) : ITemplateReposit
     public async Task<bool> ExistByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
         var template = await context.ReviewTemplates
-            .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Title == title, cancellationToken);
 
         if (template is null)

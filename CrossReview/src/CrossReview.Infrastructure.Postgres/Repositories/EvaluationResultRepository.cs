@@ -25,7 +25,6 @@ public class EvaluationResultRepository(CrossReviewDbContext context) : IEvaluat
     public async Task<EvaluationResultEntity?> GetByParametersAsync(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default)
     {
         var result = await context.EvaluationResults
-            .AsNoTracking()
             .FirstOrDefaultAsync(er => er.UserId == userId 
                                        && er.ProjectId == projectId 
                                        && er.PeriodId == periodId, cancellationToken);
@@ -36,7 +35,6 @@ public class EvaluationResultRepository(CrossReviewDbContext context) : IEvaluat
     public async Task<EvaluationResultEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var result = await context.EvaluationResults
-            .AsNoTracking()
             .FirstOrDefaultAsync(er => er.Id == id, cancellationToken);
 
         return result;
@@ -45,7 +43,6 @@ public class EvaluationResultRepository(CrossReviewDbContext context) : IEvaluat
     public async Task<List<EvaluationResultEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var results = await context.EvaluationResults
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         return results;

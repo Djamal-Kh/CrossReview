@@ -17,12 +17,17 @@ public class ReviewQuestion
         Id = id;
         Title = title;
         Weight = weight;
+        TemplateId = templateId;
     }
+    
+    // для ef core
+    private ReviewQuestion() {}
     
     public Guid Id { get; }
     public string Title {get; private set; } 
     public double Weight { get; private set; }
     public Guid TemplateId { get; private set; }
+    public TemplateEntity Template { get; private set; }
 
     public static ReviewQuestion Create(Guid templateId,string title, double weight)
     {
@@ -39,11 +44,16 @@ public class ReviewQuestion
         {
             ValidateTitle(newTitle);
             Title = newTitle;
+            return;
+        }
+
+        if (newTitle is null)
+        {
+            ValidateWeight(newWeight);
+            Weight = newWeight;
+            return;
         }
         
-        if (newTitle is null)
-            ValidateWeight(newWeight);
-
         Title = newTitle;
         Weight = newWeight;
     }

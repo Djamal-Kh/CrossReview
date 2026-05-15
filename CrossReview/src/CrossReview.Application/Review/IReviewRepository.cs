@@ -18,6 +18,7 @@ public interface IReviewRepository
         CancellationToken cancellationToken = default);
     
     public Task<List<ReviewEntity>> GetAllAsync(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default);
+    public Task<List<ReviewEntity>> GetAllAsyncForSeed(Guid prijectId, CancellationToken cancellationToken = default);
     public Task<Guid?> DeleteAsync(ReviewEntity review, CancellationToken cancellationToken = default);
     public Task<bool> ExistsReviewAsync(Guid reviewerId,Guid revieweeId, Guid periodId, CancellationToken cancellationToken = default);
 }

@@ -3,6 +3,7 @@ using CrossReview.Application.Review;
 using CrossReview.Application.Template;
 using CrossReview.Application.User;
 using CrossReview.Infrastructure.Postgres.Repositories;
+using CrossReview.Infrastructure.Postgres.Seeds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,8 @@ public static class DependencyInjection
         services.AddScoped<IEvaluationResultRepository, EvaluationResultRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ITemplateRepository, TemplateRepository>();
+
+        services.AddScoped<DatabaseSeeder>();
             
         return services;
     }

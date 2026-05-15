@@ -17,6 +17,9 @@ public class ReviewAnswer
         Comment = comment;
     }
     
+    // для ef core
+    private ReviewAnswer () {} 
+    
     public Guid QuestionId { get; }
     public Guid ReviewId { get; private set; }
     public int Score { get; private set; }
@@ -35,6 +38,7 @@ public class ReviewAnswer
         Comment = newComment;
     }
 
+    // а надо ?
     public void ClearComment()
     {
         Comment = string.Empty;

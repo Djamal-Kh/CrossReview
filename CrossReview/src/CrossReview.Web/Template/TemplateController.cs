@@ -3,6 +3,7 @@ using CrossReview.Application.Template.UseCases.AddQuestionToTemplate;
 using CrossReview.Application.Template.UseCases.CreateTemplate;
 using CrossReview.Application.Template.UseCases.DeactivateTemplate;
 using CrossReview.Application.Template.UseCases.DeleteTemplate;
+using CrossReview.Application.Template.UseCases.GetTemplateById;
 using CrossReview.Application.Template.UseCases.RemoveQuestionFromTemplate;
 using CrossReview.Application.Template.UseCases.ReorderQuestions;
 using CrossReview.Application.Template.UseCases.UpdateQuestionInTemplate;
@@ -25,6 +26,7 @@ public class TemplateController : ControllerBase
     private readonly ReorderQuestionsUseCase _reorderQuestionsUseCase;
     private readonly UpdateQuestionUseCase _updateQuestionUseCase;
     private readonly UpdateTemplateTitleUseCase _updateTemplateTitleUseCase;
+    private readonly GetTemplateByIdUseCase _getTemplateByIdUseCase;
     
     public TemplateController(
         ActivateTemplateUseCase activateTemplateUseCase,
@@ -35,7 +37,8 @@ public class TemplateController : ControllerBase
         RemoveQuestionUseCase removeQuestionUseCase,
         ReorderQuestionsUseCase reorderQuestionsUseCase,
         UpdateQuestionUseCase updateQuestionUseCase, 
-        UpdateTemplateTitleUseCase updateTemplateTitleUseCase)
+        UpdateTemplateTitleUseCase updateTemplateTitleUseCase,
+        GetTemplateByIdUseCase getTemplateByIdUseCase)
     {
         _activateTemplateUseCase = activateTemplateUseCase;
         _addQuestionUseCase = addQuestionUseCase;
@@ -46,6 +49,7 @@ public class TemplateController : ControllerBase
         _reorderQuestionsUseCase = reorderQuestionsUseCase;
         _updateQuestionUseCase = updateQuestionUseCase;
         _updateTemplateTitleUseCase = updateTemplateTitleUseCase;
+        _getTemplateByIdUseCase = getTemplateByIdUseCase;
     }
 
     [HttpPost]
@@ -101,7 +105,25 @@ public class TemplateController : ControllerBase
         
         return Ok(result.Value);
     }
+    
+    [HttpGet]
+    [Route("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetById(
+        Guid templateId,
+        CancellationToken cancellationToken)
+    {
+        var request = new GetTemplateByIdRequest(templateId);
 
+        var result = await _getTemplateByIdUseCase.Execute(request, cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+        
+        return Ok(result.Value);
+    }
+    
+    
     [HttpPatch]
     [Route("deactivate")]
     [Authorize(Roles = "Admin")]

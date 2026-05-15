@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Template.UseCases.CreateTemplate;
 
@@ -8,14 +10,14 @@ public class CreateTemplateValidator : AbstractValidator<CreateTemplateRequest>
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()
-            .WithMessage("Project ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(CreateTemplateRequest.ProjectId)));
         
         RuleFor(x => x.Title)
             .NotEmpty()
-            .WithMessage("Template title is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(CreateTemplateRequest.Title)))
             .MaximumLength(200)
-            .WithMessage("Template title must not exceed 200 characters")
+            .WithError(GeneralErrors.ValueTooLong(200, nameof(CreateTemplateRequest.Title)))
             .MinimumLength(3)
-            .WithMessage("Template title must be at least 3 characters");
+            .WithError(GeneralErrors.ValueTooShort(3, nameof(CreateTemplateRequest.Title)));
     }
 }

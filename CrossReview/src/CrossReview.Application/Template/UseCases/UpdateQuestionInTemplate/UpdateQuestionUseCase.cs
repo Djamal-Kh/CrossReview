@@ -35,22 +35,8 @@ public class UpdateQuestionUseCase
         
         if (template is null)
             return GeneralErrors.NotFound(request.TemplateId).ToErrors();
-
-        var question = template.Questions.FirstOrDefault(q => q.Id == request.TemplateId);
-
-        if (question is null)
-            return GeneralErrors.NotFound(request.QuestionId).ToErrors();
-
-        bool weightHasValue = true;
         
-        if (request.Weight.Value == 0)
-            weightHasValue = false;
-        
-        if (weightHasValue)
-            question.Update(request.Title, request.Weight.Value);
-        
-        else 
-            question.Update(request.Title);
+        template.UpdateQuestion(request.QuestionId, request.Title, request.Weight.Value);
         
         await _templateRepository.SaveAsync(cancellationToken);
         

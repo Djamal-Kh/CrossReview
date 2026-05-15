@@ -4,6 +4,8 @@ using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Template.UseCases.ReorderQuestions;
 
+// Возможно не нужен
+
 public class ReorderQuestionsUseCase
 {
     private readonly ILogger<ReorderQuestionsUseCase> _logger;
@@ -16,8 +18,7 @@ public class ReorderQuestionsUseCase
         _logger = logger;
         _templateRepository = templateRepository;
     }
-
-    // Пока что больше как заглушка, потом подумай как нормально реализовать
+    
     public async Task<Result<Guid, Errors>> Execute(ReorderQuestionsRequest request, CancellationToken cancellationToken)
     {
         var template = await _templateRepository.GetByIdAsync(request.TemplateId, cancellationToken);

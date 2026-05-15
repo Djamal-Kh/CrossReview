@@ -20,7 +20,7 @@ public class CrossReviewDbContext
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CrossReviewDbContext).Assembly);
     }
-
+    
     public DbSet<ProjectEntity> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<ReviewPeriod> ReviewPeriods { get; set; }

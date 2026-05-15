@@ -1,4 +1,5 @@
-﻿using CrossReview.Application.Project.UseCases.AddNewReviewPeriod;
+﻿using CrossReview.Application.Project.UseCases.ActivateReviewPeriod;
+using CrossReview.Application.Project.UseCases.AddNewReviewPeriod;
 using CrossReview.Application.Project.UseCases.ArchiveReviewPeriod;
 using CrossReview.Application.Project.UseCases.CloseReviewPeriod;
 using CrossReview.Application.Project.UseCases.UpdateReviewPeriodDates;
@@ -15,17 +16,20 @@ public class ReviewPeriodController : ControllerBase
     private readonly CloseReviewPeriodUseCase _closeReviewPeriodUseCase;
     private readonly ArchiveReviewPeriodUseCase _archiveReviewPeriodUseCase;
     private readonly UpdateReviewPeriodDatesUseCase _updateReviewPeriodDatesUseCase;
+    private readonly ActivateReviewPeriodUseCase _activateReviewPeriodUseCase;
     
     public ReviewPeriodController(
         AddNewPeriodUseCase addNewPeriodUseCase, 
         CloseReviewPeriodUseCase closeReviewPeriodUseCase, 
         ArchiveReviewPeriodUseCase archiveReviewPeriodUseCase, 
-        UpdateReviewPeriodDatesUseCase updateReviewPeriodDatesUseCase)
+        UpdateReviewPeriodDatesUseCase updateReviewPeriodDatesUseCase, 
+        ActivateReviewPeriodUseCase activateReviewPeriodUseCase)
     {
         _addNewPeriodUseCase = addNewPeriodUseCase;
         _closeReviewPeriodUseCase = closeReviewPeriodUseCase;
         _archiveReviewPeriodUseCase = archiveReviewPeriodUseCase;
         _updateReviewPeriodDatesUseCase = updateReviewPeriodDatesUseCase;
+        _activateReviewPeriodUseCase = activateReviewPeriodUseCase;
     }
     
     [HttpPost]
@@ -96,6 +100,24 @@ public class ReviewPeriodController : ControllerBase
         var request = new UpdateReviewPeriodDatesRequest(projectId, periodId, startDate, endDate);
         
         var result = await _updateReviewPeriodDatesUseCase.Execute(request, cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok("Success");
+    }
+
+    [HttpPatch]
+    [Route("activate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Activate(
+        Guid projectId,
+        Guid periodId,
+        CancellationToken cancellationToken)
+    {
+        var request = new ActivateReviewPeriodRequest(projectId, periodId);
+
+        var result = await _activateReviewPeriodUseCase.Execute(request, cancellationToken);
         
         if (result.IsFailure)
             return BadRequest(result.Error);

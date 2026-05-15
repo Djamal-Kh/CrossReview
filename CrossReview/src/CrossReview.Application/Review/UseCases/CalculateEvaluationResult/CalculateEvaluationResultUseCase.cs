@@ -27,8 +27,6 @@ public class CalculateEvaluationResultUseCase
 
         if (!reviews.Any())
             return GeneralErrors.CollectionEmpty().ToErrors();
-        
-        //todo позже сделать дополнительные проверки. Например, чтобы количество ревью было не меньше n-го и т.п.
 
         var result = EvaluationResultEntity.Create(request.UserId, request.ProjectId, request.PeriodId);
         

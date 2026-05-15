@@ -18,6 +18,9 @@ public class EvaluationResultEntity
         PeriodId = periodId;
     }
     
+    // для ef core
+    private EvaluationResultEntity() {}
+    
     public Guid Id { get; }
     public Guid UserId { get; }
     public Guid ProjectId { get; }

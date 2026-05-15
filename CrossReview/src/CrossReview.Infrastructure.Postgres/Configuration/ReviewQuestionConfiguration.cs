@@ -20,6 +20,7 @@ public class ReviewQuestionConfiguration : IEntityTypeConfiguration<ReviewQuesti
         
         builder
             .Property(rq => rq.Id)
+            .ValueGeneratedNever()
             .HasColumnName("question_id")
             .IsRequired();
         
@@ -32,5 +33,9 @@ public class ReviewQuestionConfiguration : IEntityTypeConfiguration<ReviewQuesti
             .Property(rq => rq.Weight)
             .HasColumnName("weight")
             .IsRequired();
+        
+        builder.HasOne(rq => rq.Template)
+            .WithMany(t => t.Questions)
+            .HasForeignKey(rq => rq.TemplateId);
     }
 }

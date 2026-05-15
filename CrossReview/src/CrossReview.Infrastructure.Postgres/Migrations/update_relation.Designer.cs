@@ -3,6 +3,7 @@ using System;
 using CrossReview.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CrossReview.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(CrossReviewDbContext))]
-    partial class CrossReviewDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514164031_update_relation")]
+    partial class update_relation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

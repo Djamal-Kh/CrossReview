@@ -26,6 +26,9 @@ public class ReviewEntity
         Status = EnumReviewStatus.Draft;
     }
     
+    // для ef core
+    private ReviewEntity() {} 
+    
     public Guid Id { get; }
     public Guid ReviewerId { get; } 
     public Guid RevieweeId { get; } 
@@ -51,8 +54,8 @@ public class ReviewEntity
             periodId);
     }
     
-    //todo нужна будет более серьезная бизнес-логика (валидация)
-    public bool IsCompleted(IEnumerable<Guid> templateQuestions)
+    // Нужна будет более серьезная бизнес-логика (валидация), сильно на будущее. Оставляю как есть
+    public bool IsCompleted(IReadOnlyCollection<Guid> templateQuestions)
     {
         var questionIds = templateQuestions.ToList();
         
@@ -65,13 +68,13 @@ public class ReviewEntity
         return true;
     }
 
-    private void EnsureCompleted(IEnumerable<Guid> templateQuestionIds)
+    private void EnsureCompleted(IReadOnlyCollection<Guid> templateQuestionIds)
     {
         if (!IsCompleted(templateQuestionIds))
             throw new ValidationException("Ревью еще не заполнено");
     }
     
-    public void Submit(IEnumerable<Guid> templateQuestionIds)
+    public void Submit(IReadOnlyCollection<Guid> templateQuestionIds)
     {
         if (!_answers.Any())
             throw new ValidationException("Нельзя опубликовать ревью без ответов");
@@ -104,10 +107,10 @@ public class ReviewEntity
     {
         EnsureEditable();
         
-        var answer = ReviewAnswer.Create(Id, questionId, score, comment);
+        if (_answers.Any(q => q.QuestionId == questionId))
+            throw new ValidationException("Ответ на данный вопрос уже существует");
         
-        if (_answers.Any(q => q.QuestionId == answer.QuestionId))
-            throw new ValidationException("Ответа для такого вопроса не существует");
+        var answer = ReviewAnswer.Create(Id, questionId, score, comment);
         
         _answers.Add(answer);
     }

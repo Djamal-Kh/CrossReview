@@ -18,13 +18,15 @@ public class ProjectRepository(CrossReviewDbContext context) : IProjectRepositor
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
+        context.ChangeTracker.DetectChanges();
         await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<ProjectEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var project = await context.Projects
-            .AsNoTracking()
+            .Include(p => p.Members)
+            .Include(p => p.ReviewPeriods)
             .FirstOrDefaultAsync(p => p.Id == id, 
                 cancellationToken);
         
@@ -34,7 +36,8 @@ public class ProjectRepository(CrossReviewDbContext context) : IProjectRepositor
     public async Task<List<ProjectEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var projects = await context.Projects
-            .AsNoTracking()
+            .Include(p => p.Members)
+            .Include(p => p.ReviewPeriods)
             .ToListAsync(cancellationToken);
 
         return projects;
@@ -50,7 +53,6 @@ public class ProjectRepository(CrossReviewDbContext context) : IProjectRepositor
     public async Task<bool> ExistsByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
         var project = await context.Projects
-            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Title == title, 
                 cancellationToken);
 

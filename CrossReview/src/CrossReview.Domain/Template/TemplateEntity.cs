@@ -23,6 +23,10 @@ public class TemplateEntity
         _questions = new List<ReviewQuestion>();
         IsActive = isActive;
     }
+    
+    // для ef core
+    private TemplateEntity() {}
+    
     public Guid Id { get; }
     public Guid ProjectId {get; private set;}
     public string Title { get; private set; }
@@ -32,7 +36,6 @@ public class TemplateEntity
     
     public static TemplateEntity Create(Guid projectId, string title)
     {
-        //todo 
         return new TemplateEntity(Guid.NewGuid(), projectId, title);
     }
 
@@ -98,7 +101,7 @@ public class TemplateEntity
     {
         if (IsActive)
             throw new ValidationException("Шаблон и так имеет статус активного");
-
+        
         if (!_questions.Any())
             throw new ValidationException("Нельзя изменить статус шаблона на активный без вопросов");
             

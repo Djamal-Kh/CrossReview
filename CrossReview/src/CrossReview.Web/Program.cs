@@ -2,6 +2,7 @@ using System;
 using CrossReview;
 using Crossreview.Infrastructure.Identity;
 using CrossReview.Infrastructure.Postgres;
+using CrossReview.Infrastructure.Postgres.Seeds;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,13 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
     await IdentitySeeder.SeedAsync(userManager, roleManager);
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+
+    await seeder.SeedAsync(scope.ServiceProvider);
 }
 
 app.Run();

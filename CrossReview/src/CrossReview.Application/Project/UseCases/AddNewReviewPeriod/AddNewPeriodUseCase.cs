@@ -24,10 +24,12 @@ public class AddNewPeriodUseCase
 
     public async Task<Result<Guid, Errors>> Execute(AddNewPeriodRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        // Оставляю пока без валидации
+        
+        //var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
-        if (!validationResult.IsValid)
-            return validationResult.ToList();
+        //if (!validationResult.IsValid)
+          //  return validationResult.ToList();
         
         var project = await _repository.GetByIdAsync(request.ProjectId, cancellationToken);
         

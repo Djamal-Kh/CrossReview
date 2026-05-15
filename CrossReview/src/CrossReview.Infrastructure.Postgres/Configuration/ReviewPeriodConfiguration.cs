@@ -11,10 +11,10 @@ public class ReviewPeriodConfiguration : IEntityTypeConfiguration<ReviewPeriod>
         builder.ToTable("review_periods");
         
         builder.HasKey(rp => rp.Id);
-        
+
         builder.Property(rp => rp.Id)
-            .HasColumnName("id")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever()
+            .HasColumnName("id");
 
         builder.Property(rp => rp.ProjectId)
             .HasColumnName("project_id")
