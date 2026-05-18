@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Template.UseCases.UpdateTemplateTitle;
 
@@ -8,14 +10,14 @@ public class UpdateTemplateTitleValidator : AbstractValidator<UpdateTemplateTitl
     {
         RuleFor(x => x.TemplateId)
             .NotEmpty()
-            .WithMessage("Template ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateTemplateTitleRequest.TemplateId)));
         
         RuleFor(x => x.Title)
             .NotEmpty()
-            .WithMessage("Template title is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateTemplateTitleRequest.Title)))
             .MaximumLength(200)
-            .WithMessage("Template title must not exceed 200 characters")
+            .WithError(GeneralErrors.ValueTooLong(200, nameof(UpdateTemplateTitleRequest.Title)))
             .MinimumLength(3)
-            .WithMessage("Template title must be at least 3 characters");
+            .WithError(GeneralErrors.ValueTooShort(3, nameof(UpdateTemplateTitleRequest.Title)));
     }
 }

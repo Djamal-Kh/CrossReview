@@ -18,14 +18,11 @@ public class GetReviewsForUserUseCase
         _logger = logger;
         _reviewRepository = reviewRepository;
     }
-    public async Task<Result<List<ReviewForRevieweeDto>, Errors>> Execute(GetReviewsForUserRequest request,
+    public async Task<List<ReviewForRevieweeDto>> Execute(GetReviewsForUserRequest request,
         CancellationToken cancellationToken)
     {
         var reviews = await _reviewRepository.GetAllAsync(request.UserId, request.ProjectId, request.PeriodId);
-
-        if (!reviews.Any())
-            return GeneralErrors.CollectionEmpty().ToErrors();
-
+        
         var result = reviews.Select(r => new ReviewForRevieweeDto
         {
             Id = r.Id,

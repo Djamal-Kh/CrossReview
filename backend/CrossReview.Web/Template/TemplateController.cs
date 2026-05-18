@@ -112,7 +112,7 @@ public class TemplateController : ControllerBase
     
     [HttpGet]
     [Route("all")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await _getAllTemplatesUseCase.Execute(cancellationToken);
@@ -125,7 +125,7 @@ public class TemplateController : ControllerBase
     
     [HttpGet]
     [Route("{templateId:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetById(
         Guid templateId,
         CancellationToken cancellationToken)
@@ -139,7 +139,6 @@ public class TemplateController : ControllerBase
         
         return Ok(result.Value);
     }
-    
     
     [HttpPatch]
     [Route("deactivate")]

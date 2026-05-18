@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Project.UseCases.RemoveProjectMember;
 
@@ -8,14 +10,10 @@ public class RemoveProjectMemberValidator : AbstractValidator<RemoveProjectMembe
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()
-            .WithMessage("Project ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RemoveProjectMemberRequest.ProjectId)));
         
         RuleFor(x => x.UserId)
             .NotEmpty()
-            .WithMessage("User ID is required");
-        
-        RuleFor(x => x.ProjectId)
-            .NotEqual(x => x.UserId)
-            .WithMessage("Project ID and User ID cannot be the same");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RemoveProjectMemberRequest.UserId)));
     }
 }

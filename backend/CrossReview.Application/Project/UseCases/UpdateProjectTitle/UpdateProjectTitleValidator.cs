@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Project.UseCases.UpdateProjectTitle;
 
@@ -8,14 +10,14 @@ public class UpdateProjectTitleValidator : AbstractValidator<UpdateProjectTitleR
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()
-            .WithMessage("Project ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateProjectTitleRequest.ProjectId)));
         
         RuleFor(x => x.Title)
             .NotEmpty()
-            .WithMessage("Title is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateProjectTitleRequest.Title)))
             .MaximumLength(200)
-            .WithMessage("Title must not exceed 200 characters")
+            .WithError(GeneralErrors.ValueTooLong(200, nameof(UpdateProjectTitleRequest.Title)))
             .MinimumLength(3)
-            .WithMessage("Title must be at least 3 characters");
+            .WithError(GeneralErrors.ValueTooShort(3, nameof(UpdateProjectTitleRequest.Title)));
     }
 }

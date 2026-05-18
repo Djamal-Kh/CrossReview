@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Template.UseCases.AddQuestionToTemplate;
 
@@ -8,20 +10,20 @@ public class AddQuestionValidator : AbstractValidator<AddQuestionRequest>
     {
         RuleFor(x => x.TemplateId)
             .NotEmpty()
-            .WithMessage("Template ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(AddQuestionRequest.TemplateId)));
         
         RuleFor(x => x.Title)
             .NotEmpty()
-            .WithMessage("Question title is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(AddQuestionRequest.Title)))
             .MaximumLength(500)
-            .WithMessage("Question title must not exceed 500 characters")
+            .WithError(GeneralErrors.ValueTooLong(500, nameof(AddQuestionRequest.Title)))
             .MinimumLength(3)
-            .WithMessage("Question title must be at least 3 characters");
+            .WithError(GeneralErrors.ValueTooShort(3, nameof(AddQuestionRequest.Title)));
         
         RuleFor(x => x.Weight)
             .InclusiveBetween(0, 10)
-            .WithMessage("Weight must be between 0 and 10")
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddQuestionRequest.Weight)))
             .Must(weight => weight >= 0)
-            .WithMessage("Weight cannot be negative");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddQuestionRequest.Weight)));
     }
 }

@@ -108,6 +108,7 @@ public class ReviewController : ControllerBase
         return Ok(result.Value);
     }
 
+    // вызывается при переходе на страницу ревью
     [HttpGet]
     [Route("by-parameters")]
     [Authorize(Roles = "User, Admin")]
@@ -128,23 +129,21 @@ public class ReviewController : ControllerBase
         return Ok(result.Value);
     }
 
+    // вызывается
     [HttpGet]
     [Route("by-reviewers")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetForUser(
         Guid userId,
-        Guid projectId,
-        Guid periodId,
+        Guid? projectId,
+        Guid? periodId,
         CancellationToken cancellationToken)
     {
         var request = new GetReviewsForUserRequest(userId, projectId, periodId);
         
         var result = await _getReviewsForUserUseCase.Execute(request, cancellationToken);
         
-        if (result.IsFailure)
-            return BadRequest(result.Error);
-        
-        return Ok(result.Value);
+        return Ok(result);
     }
     
     [HttpPatch]

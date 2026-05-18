@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using CrossReview.Application;
 using CrossReview.Application.User;
 using Crossreview.Infrastructure.Identity;
@@ -6,7 +7,6 @@ using CrossReview.Infrastructure.Postgres;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 
 namespace CrossReview;
@@ -57,6 +57,12 @@ public static class DependencyInjection
             });
         });
 
+        /*services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });*/
+        
         services.AddHttpContextAccessor();
 
         return services;

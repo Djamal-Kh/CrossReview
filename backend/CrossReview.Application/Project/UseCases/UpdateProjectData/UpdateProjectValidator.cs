@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Project.UseCases.UpdateProjectData;
 
@@ -8,19 +10,19 @@ public class UpdateProjectValidator : AbstractValidator<UpdateProjectRequest>
     {
         RuleFor(x => x.ProjectId)
             .NotEmpty()
-            .WithMessage("Project ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateProjectRequest.ProjectId)));
         
         RuleFor(x => x.Title)
             .NotEmpty()
-            .WithMessage("Title is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateProjectRequest.Title)))
             .MaximumLength(200)
-            .WithMessage("Title must not exceed 200 characters")
+            .WithError(GeneralErrors.ValueTooLong(200, nameof(UpdateProjectRequest.Title)))
             .MinimumLength(3)
-            .WithMessage("Title must be at least 3 characters");
+            .WithError(GeneralErrors.ValueTooShort(3, nameof(UpdateProjectRequest.Title)));
         
         RuleFor(x => x.Description)
             .MaximumLength(1000)
-            .WithMessage("Description must not exceed 1000 characters")
+            .WithError(GeneralErrors.ValueTooLong(1000, nameof(UpdateProjectRequest.Description)))
             .When(x => !string.IsNullOrWhiteSpace(x.Description));
     }
 }

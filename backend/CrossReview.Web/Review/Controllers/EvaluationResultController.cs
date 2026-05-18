@@ -44,6 +44,7 @@ public class EvaluationResultController : ControllerBase
     }
 
     [HttpGet]
+    [Route("by-parameters")]
     [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> Get(
         Guid userId,

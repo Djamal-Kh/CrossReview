@@ -22,7 +22,9 @@ public class TemplateRepository(CrossReviewDbContext context) : ITemplateReposit
 
     public async Task<List<TemplateEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var result = await context.ReviewTemplates.ToListAsync(cancellationToken);
+        var result = await context.ReviewTemplates
+            .Include(t => t.Questions)
+            .ToListAsync(cancellationToken);
         
         return result;
     }

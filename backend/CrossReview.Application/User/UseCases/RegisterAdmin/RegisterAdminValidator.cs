@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.User.UseCases.RegisterAdmin;
 
@@ -8,42 +10,42 @@ public class RegisterAdminValidator : AbstractValidator<RegisterAdminRequest>
     {
         RuleFor(x => x.FirstName)
             .NotEmpty()
-            .WithMessage("First name is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RegisterAdminRequest.FirstName)))
             .MaximumLength(100)
-            .WithMessage("First name must not exceed 100 characters")
+            .WithError(GeneralErrors.ValueTooLong(100, nameof(RegisterAdminRequest.FirstName)))
             .MinimumLength(2)
-            .WithMessage("First name must be at least 2 characters");
+            .WithError(GeneralErrors.ValueTooShort(2, nameof(RegisterAdminRequest.FirstName)));
         
         RuleFor(x => x.LastName)
             .NotEmpty()
-            .WithMessage("Last name is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RegisterAdminRequest.LastName)))
             .MaximumLength(100)
-            .WithMessage("Last name must not exceed 100 characters")
+            .WithError(GeneralErrors.ValueTooLong(100, nameof(RegisterAdminRequest.LastName)))
             .MinimumLength(2)
-            .WithMessage("Last name must be at least 2 characters");
+            .WithError(GeneralErrors.ValueTooShort(2, nameof(RegisterAdminRequest.LastName)));
         
         RuleFor(x => x.Email)
             .NotEmpty()
-            .WithMessage("Email is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RegisterAdminRequest.Email)))
             .EmailAddress()
-            .WithMessage("Invalid email format")
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(RegisterAdminRequest.Email)))
             .MaximumLength(255)
-            .WithMessage("Email must not exceed 255 characters");
+            .WithError(GeneralErrors.ValueTooLong(255, nameof(RegisterAdminRequest.Email)));
         
         RuleFor(x => x.Password)
             .NotEmpty()
-            .WithMessage("Password is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RegisterAdminRequest.Password)))
             .MinimumLength(6)
-            .WithMessage("Password must be at least 6 characters")
+            .WithError(GeneralErrors.ValueTooShort(6, nameof(RegisterAdminRequest.Password)))
             .MaximumLength(100)
-            .WithMessage("Password must not exceed 100 characters")
+            .WithError(GeneralErrors.ValueTooLong(100, nameof(RegisterAdminRequest.Password)))
             .Matches(@"[0-9]")
-            .WithMessage("Password must contain at least one number");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(RegisterAdminRequest.Password)));
         
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .WithMessage("Phone number is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(RegisterAdminRequest.PhoneNumber)))
             .Matches(@"^\+?[1-9][0-9]{7,14}$")
-            .WithMessage("Invalid phone number format. Expected format: +1234567890 or 1234567890");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(RegisterAdminRequest.PhoneNumber)));
     }
 }

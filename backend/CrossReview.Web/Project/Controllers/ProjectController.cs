@@ -65,23 +65,6 @@ public class ProjectController : ControllerBase
         
         return Ok(result.Value);
     }
-
-    [HttpGet]
-    [Route("{id:guid}")]
-    [Authorize(Roles = "User, Admin")]
-    public async Task<IActionResult> Get(
-        Guid id, 
-        CancellationToken cancellationToken)
-    {
-        var request = new GetProjectByIdRequest(id);
-        
-        var result = await _getProjectByIdUseCase.Execute(request, cancellationToken);
-        
-        if (result.IsFailure)
-            return BadRequest(result.Error);
-        
-        return Ok(result.Value);
-    }
     
     [HttpGet]
     [Route("all")]
@@ -89,9 +72,14 @@ public class ProjectController : ControllerBase
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await _getProjectsUseCase.Execute(cancellationToken);
-        
+
         if (result.IsFailure)
+        {
+            var error = result.Error;
+            
             return BadRequest(result.Error);
+        }
+            
         
         return Ok(result.Value);
     }
@@ -106,6 +94,23 @@ public class ProjectController : ControllerBase
         var request = new GetProjectsByUserIdRequest(userId);
         
         var result = await _getProjectsByUserIdUseCase.Execute(request, cancellationToken);
+        
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+        
+        return Ok(result.Value);
+    }
+    
+    [HttpGet]
+    [Route("{id:guid}")]
+    [Authorize(Roles = "User, Admin")]
+    public async Task<IActionResult> Get(
+        Guid id, 
+        CancellationToken cancellationToken)
+    {
+        var request = new GetProjectByIdRequest(id);
+        
+        var result = await _getProjectByIdUseCase.Execute(request, cancellationToken);
         
         if (result.IsFailure)
             return BadRequest(result.Error);

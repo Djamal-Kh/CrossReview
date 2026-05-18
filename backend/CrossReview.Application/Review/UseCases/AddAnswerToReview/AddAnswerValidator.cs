@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Review.UseCases.AddAnswerToReview;
 
@@ -8,33 +10,33 @@ public class AddAnswerValidator : AbstractValidator<AddAnswerRequest>
     {
         RuleFor(x => x.ReviewId)
             .NotEmpty()
-            .WithMessage("Review ID is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(AddAnswerRequest.ReviewId)))
             .NotEqual(Guid.Empty)
-            .WithMessage("Review ID must be a valid GUID");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddAnswerRequest.ReviewId)));
         
         RuleFor(x => x.QuestionId)
             .NotEmpty()
-            .WithMessage("Question ID is required")
+            .WithError(GeneralErrors.ValueIsRequired(nameof(AddAnswerRequest.QuestionId)))
             .NotEqual(Guid.Empty)
-            .WithMessage("Question ID must be a valid GUID");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddAnswerRequest.QuestionId)));
         
         RuleFor(x => x.Score)
             .InclusiveBetween(1, 10)
-            .WithMessage("Score must be between 1 and 10")
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddAnswerRequest.Score)))
             .Must(score => score >= 0)
-            .WithMessage("Score cannot be negative");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddAnswerRequest.Score)));
         
         RuleFor(x => x.Comment)
             .MaximumLength(1000)
-            .WithMessage("Comment must not exceed 1000 characters")
+            .WithError(GeneralErrors.ValueTooLong(1000, nameof(AddAnswerRequest.Comment)))
             .MaximumLength(500)
             .When(x => string.IsNullOrWhiteSpace(x.Comment))
-            .WithMessage("Comment is required when score is below 5"); // Пример условной валидации
+            .WithError(GeneralErrors.ValueTooLong(500, nameof(AddAnswerRequest.Comment)));
         
         // Проверка, что комментарий не состоит только из пробелов
         RuleFor(x => x.Comment)
             .Must(comment => string.IsNullOrWhiteSpace(comment) || !string.IsNullOrWhiteSpace(comment.Trim()))
-            .WithMessage("Comment cannot consist only of whitespace characters")
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(AddAnswerRequest.Comment)))
             .When(x => !string.IsNullOrWhiteSpace(x.Comment));
     }
 }

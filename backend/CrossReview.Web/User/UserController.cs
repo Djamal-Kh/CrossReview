@@ -137,23 +137,6 @@ public class UserController : ControllerBase
     }
     
     [HttpGet]
-    [Route("{email}")]
-    [Authorize(Roles = "User, Admin")]
-    public async Task<IActionResult> GetByEmail(
-        string email,
-        CancellationToken cancellationToken)
-    {
-        var request = new GetUserByEmailRequest(email);
-
-        var result = await _getUserByEmailUseCase.Execute(request, cancellationToken);
-
-        if (result.IsFailure)
-            return BadRequest(result.Error);
-
-        return Ok(result.Value);
-    }
-    
-    [HttpGet]
     [Route("id/{userId:guid}")]
     [Authorize(Roles = "User, Admin")]
     public async Task<IActionResult> GetById(
@@ -167,6 +150,23 @@ public class UserController : ControllerBase
         if (result.IsFailure)
             return BadRequest(result.Error);
         
+        return Ok(result.Value);
+    }
+    
+    [HttpGet]
+    [Route("{email}")]
+    [Authorize(Roles = "User, Admin")]
+    public async Task<IActionResult> GetByEmail(
+        string email,
+        CancellationToken cancellationToken)
+    {
+        var request = new GetUserByEmailRequest(email);
+
+        var result = await _getUserByEmailUseCase.Execute(request, cancellationToken);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
         return Ok(result.Value);
     }
     

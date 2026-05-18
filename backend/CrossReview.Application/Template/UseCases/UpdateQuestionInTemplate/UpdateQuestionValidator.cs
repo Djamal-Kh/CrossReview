@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 
 namespace CrossReview.Application.Template.UseCases.UpdateQuestionInTemplate;
 
@@ -8,26 +10,26 @@ public class UpdateQuestionValidator : AbstractValidator<UpdateQuestionRequest>
     {
         RuleFor(x => x.TemplateId)
             .NotEmpty()
-            .WithMessage("Template ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateQuestionRequest.TemplateId)));
         
         RuleFor(x => x.QuestionId)
             .NotEmpty()
-            .WithMessage("Question ID is required");
+            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateQuestionRequest.QuestionId)));
         
         RuleFor(x => x.Title)
             .MaximumLength(500)
-            .WithMessage("Question title must not exceed 500 characters")
+            .WithError(GeneralErrors.ValueTooLong(500, nameof(UpdateQuestionRequest.Title)))
             .MinimumLength(3)
             .When(x => x.Title is not null)
-            .WithMessage("Question title must be at least 3 characters when provided");
+            .WithError(GeneralErrors.ValueTooShort(3, nameof(UpdateQuestionRequest.Title)));
         
         RuleFor(x => x.Weight)
             .InclusiveBetween(0, 10)
             .When(x => x.Weight.HasValue)
-            .WithMessage("Weight must be between 0 and 10 when provided");
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(UpdateQuestionRequest.Weight)));
         
         RuleFor(x => x)
             .Must(x => x.Title is not null || x.Weight is not null)
-            .WithMessage("At least one field (Title or Weight) must be provided for update");
+            .WithError(GeneralErrors.ValueIsInvalid("At least one field (Title or Weight) must be provided for update"));
     }
 }

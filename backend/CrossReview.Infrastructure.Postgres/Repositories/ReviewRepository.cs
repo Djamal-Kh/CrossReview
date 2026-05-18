@@ -43,29 +43,42 @@ public class ReviewRepository(CrossReviewDbContext context) : IReviewRepository
         return reviews;
     }
 
-    public async Task<ReviewEntity?> GetByProject(Guid projectId, Guid revieweeId, Guid reviewerId, Guid periodId,
+    public async Task<List<ReviewEntity>> GetByProject(Guid? projectId, Guid? revieweeId, Guid? reviewerId, Guid? periodId,
         CancellationToken cancellationToken = default)
     {
-        var review = await context.Reviews
+        var query = context.Reviews
+            .AsNoTracking()
             .Include(r => r.Answers)
-            .FirstOrDefaultAsync(r => r.ProjectId == projectId 
-                && r.RevieweeId == revieweeId
-                && r.ReviewerId == reviewerId
-                && r.PeriodId == periodId, cancellationToken);
+            .AsQueryable();
 
-        return review;
+        if (projectId is not null)
+            query = query.Where(r => r.ProjectId == projectId);
+
+        if (revieweeId is not null)
+            query = query.Where(r => r.RevieweeId == revieweeId);
+
+        if (reviewerId is not null)
+            query = query.Where(r => r.ReviewerId == reviewerId);
+
+        if (periodId is not null)
+            query = query.Where(r => r.PeriodId == periodId);
+
+        return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<List<ReviewEntity>> GetAllAsync(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default)
+    public async Task<List<ReviewEntity>> GetAllAsync(Guid userId, Guid? projectId, Guid? periodId, CancellationToken cancellationToken = default)
     {
-        var reviews = await context.Reviews
+        var query = context.Reviews
             .Include(r => r.Answers)
-            .Where(r => r.RevieweeId == userId
-                && r.ProjectId == projectId
-                && r.PeriodId == periodId)
-            .ToListAsync(cancellationToken);
+            .Where(r => r.ReviewerId == userId); 
 
-        return reviews;
+        if (projectId is not null)
+            query = query.Where(r => r.ProjectId == projectId);
+
+        if (periodId is not null)
+            query = query.Where(r => r.PeriodId == periodId);
+
+        return await query.ToListAsync(cancellationToken);
     }
 
     public async Task<List<ReviewEntity>> GetAllAsyncForSeed(Guid projectId, CancellationToken cancellationToken = default)

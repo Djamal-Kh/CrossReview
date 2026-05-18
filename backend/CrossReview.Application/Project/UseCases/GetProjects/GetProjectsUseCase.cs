@@ -21,6 +21,8 @@ public class GetProjectsUseCase
 
     public async Task<Result<List<ProjectListItemDto>, Errors>> Execute(CancellationToken cancellationToken)
     {
+        _logger.LogInformation($"UseCase Token HashCode: {cancellationToken.GetHashCode()}");
+        
         var projects = await _repository.GetAllAsync(cancellationToken);
 
         if (projects.Count == 0)
