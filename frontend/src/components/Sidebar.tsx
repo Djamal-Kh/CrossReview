@@ -5,11 +5,10 @@ import { initials } from '../utils/helpers';
 
 interface SidebarProps {
   currentPage: string;
-  onNavigate: (page: string) => void;
   draftReviewCount?: number;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, draftReviewCount = 0 }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentPage, draftReviewCount = 0 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isAdmin = user?.role === 'Admin';
@@ -49,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, draft
               <button
                 key={item.id}
                 className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
-                onClick={() => onNavigate(item.id)}
+                onClick={() => navigate(`/${item.id}`)} // Навигация по путям /dashboard, /projects и т.д.
               >
                 <span style={{ fontSize: 16 }}>{item.icon}</span>
                 {item.label}

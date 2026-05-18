@@ -138,7 +138,7 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("id/{userId:guid}")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetById(
         Guid userId,
         CancellationToken cancellationToken)
@@ -155,7 +155,7 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("{email}")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetByEmail(
         string email,
         CancellationToken cancellationToken)

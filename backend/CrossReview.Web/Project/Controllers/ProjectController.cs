@@ -103,7 +103,7 @@ public class ProjectController : ControllerBase
     
     [HttpGet]
     [Route("{id:guid}")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> Get(
         Guid id, 
         CancellationToken cancellationToken)

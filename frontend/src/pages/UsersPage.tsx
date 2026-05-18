@@ -186,7 +186,7 @@ export const UsersPage: React.FC = () => {
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['users'],
-    queryFn: () => (authAPI as any).getAll(),
+    queryFn: () => authAPI.getAll(),
     select: (r: any) => r.data as User[],
   });
 

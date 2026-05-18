@@ -1,7 +1,9 @@
 ﻿import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Импорты страниц и компонентов...
 import { ReviewsPage } from './pages/ReviewsPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -18,7 +20,7 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5,
     },
   },
 });
@@ -33,41 +35,42 @@ const PAGE_META: Record<string, { title: string; sub: string }> = {
 };
 
 interface MainLayoutProps {
-  currentPage: string;
-  onPageChange: (page: string) => void;
   draftReviewCount: number;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ currentPage, onPageChange, draftReviewCount }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ draftReviewCount }) => {
   const { user } = useAuth();
+  const location = useLocation();
   const isAdmin = user?.role === 'Admin';
-  const meta = PAGE_META[currentPage] || { title: currentPage, sub: '' };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard':
-        return <DashboardPage />;
-      case 'projects':
-            return <ProjectsPage />;
-      case 'reviews':
-        return <ReviewsPage />;
-      case 'results':
-        return <ResultsPage />;
-      case 'templates':
-            return isAdmin ? <TemplatesPage /> : <Navigate to="/dashboard" />;
-      case 'users':
-            return isAdmin ? <UsersPage /> : <Navigate to="/dashboard" />;
-      default:
-        return <Navigate to="/dashboard" />;
-    }
-  };
+  
+  // Извлекаем текущую страницу из URL (например, "/projects" -> "projects")
+  const currentPage = location.pathname.replace('/', '') || 'dashboard';
+  const meta = PAGE_META[currentPage] || { title: 'Загрузка...', sub: '' };
 
   return (
     <div className="layout">
-      <Sidebar currentPage={currentPage} onNavigate={onPageChange} draftReviewCount={draftReviewCount} />
+      {/* Sidebar теперь должен использовать внутри себя <Link to="/..."> или useNavigate() */}
+      <Sidebar currentPage={currentPage} draftReviewCount={draftReviewCount} />
+      
       <div className="main">
         <Topbar title={meta.title} subtitle={meta.sub} />
-        <div className="content">{renderPage()}</div>
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
+            <Route path="/results" element={<ResultsPage />} />
+            <Route path="/templates" element={<TemplatesPage />} />
+            {/* Если не админ, перенаправляем на дашборд. Replace предотвращает бесконечную петлю в истории браузера */}
+            <Route 
+              path="/users" 
+              element={isAdmin ? <UsersPage /> : <Navigate to="/dashboard" replace />} 
+            />
+            {/* Для любых несуществующих URL */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </div>
       </div>
     </div>
   );
@@ -75,7 +78,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ currentPage, onPageChange, draf
 
 function AppContent() {
   const { isLoading, isAuthenticated } = useAuth();
-  const [currentPage, setCurrentPage] = useState('dashboard');
   const [draftReviewCount] = useState(0); // TODO: fetch from API
 
   if (isLoading) {
@@ -90,7 +92,7 @@ function AppContent() {
     return <LoginPage />;
   }
 
-  return <MainLayout currentPage={currentPage} onPageChange={setCurrentPage} draftReviewCount={draftReviewCount} />;
+  return <MainLayout draftReviewCount={draftReviewCount} />;
 }
 
 function App() {
@@ -105,4 +107,4 @@ function App() {
   );
 }
 
-export default  App;
+export default App;

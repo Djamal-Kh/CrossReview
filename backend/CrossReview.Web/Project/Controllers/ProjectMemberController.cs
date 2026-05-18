@@ -58,7 +58,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpGet]
     [Route("project/{projectId:guid}")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetProjectMembers(
         Guid projectId,
         CancellationToken cancellationToken)
@@ -75,7 +75,7 @@ public class ProjectMemberController : ControllerBase
 
     [HttpGet]
     [Route("by-id")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetProjectMemberById(
         [FromRoute] Guid projectId,
         [FromRoute] Guid userId,

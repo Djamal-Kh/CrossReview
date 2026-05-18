@@ -93,7 +93,7 @@ public class ReviewController : ControllerBase
     // А так ли было запланировано ?
     [HttpGet]
     [Route("id")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetByIdOrParameters(
         Guid id,
         CancellationToken cancellationToken)
@@ -111,7 +111,7 @@ public class ReviewController : ControllerBase
     // вызывается при переходе на страницу ревью
     [HttpGet]
     [Route("by-parameters")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetForProjectAndPeriod(
         Guid projectId,
         Guid revieweeId,
@@ -132,7 +132,7 @@ public class ReviewController : ControllerBase
     // вызывается
     [HttpGet]
     [Route("by-reviewers")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> GetForUser(
         Guid userId,
         Guid? projectId,
@@ -148,7 +148,7 @@ public class ReviewController : ControllerBase
     
     [HttpPatch]
     [Route("close")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Close(
         Guid reviewId,
         CancellationToken cancellationToken)
@@ -165,7 +165,7 @@ public class ReviewController : ControllerBase
 
     [HttpPatch]
     [Route("answer/remove")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> RemoveAnswer(
         Guid reviewId,
         Guid questionId,

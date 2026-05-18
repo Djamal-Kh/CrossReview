@@ -26,7 +26,7 @@ public class EvaluationResultController : ControllerBase
 
     [HttpPost]
     [Route("calculate")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> Calculate(
         Guid userId,
         Guid projectId,
@@ -45,7 +45,7 @@ public class EvaluationResultController : ControllerBase
 
     [HttpGet]
     [Route("by-parameters")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> Get(
         Guid userId,
         Guid projectId,
@@ -64,7 +64,7 @@ public class EvaluationResultController : ControllerBase
 
     [HttpPatch]
     [Route("recalculate")]
-    [Authorize(Roles = "User, Admin")]
+    [Authorize]
     public async Task<IActionResult> Recalculate(
         Guid evaluationResultId,
         CancellationToken cancellationToken)
