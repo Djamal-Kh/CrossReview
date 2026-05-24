@@ -83,7 +83,7 @@ public class TemplateEntity
 
     public void ValidateWeight()
     {
-        const double targetValue = 1.0; 
+        const double targetValue = 10.0; 
         
         var sum = _questions.Sum(q => q.Weight);
 

@@ -33,13 +33,13 @@ public static class TemplateSeed
     {
         var template = TemplateEntity.Create(projectId, "Default 360 Review");
 
-        template.AddQuestion(template.Id, "Communication", 0.15);
-        template.AddQuestion(template.Id, "TeamworkTooShort", 0.15);
-        template.AddQuestion(template.Id, "Responsibility", 0.10);
-        template.AddQuestion(template.Id, "Technical Skills", 0.20);
-        template.AddQuestion(template.Id, "Problem Solving", 0.15);
-        template.AddQuestion(template.Id, "Initiative", 0.15);
-        template.AddQuestion(template.Id, "Reliability", 0.10);
+        template.AddQuestion(template.Id, "Communication", 1.5);
+        template.AddQuestion(template.Id, "Teamwork", 1.5);
+        template.AddQuestion(template.Id, "Responsibility", 1.0);
+        template.AddQuestion(template.Id, "Technical Skills", 2.0);
+        template.AddQuestion(template.Id, "Problem Solving", 1.5);
+        template.AddQuestion(template.Id, "Initiative", 1.5);
+        template.AddQuestion(template.Id, "Reliability", 1.0);
 
         return template;
     }

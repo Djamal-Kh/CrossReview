@@ -6,7 +6,7 @@ public class ReviewQuestion
 {
     private const int MaxTitleLenght = 300;
     private const int MinTitleLenght = 10;
-    private const double MaxWeight = 1;
+    private const double MaxWeight = 10.0;
     private const double MinWeight = 0.1;
     
     private ReviewQuestion(Guid id, Guid templateId, string title, double weight)

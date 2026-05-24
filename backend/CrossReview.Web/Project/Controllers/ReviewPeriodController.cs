@@ -41,7 +41,10 @@ public class ReviewPeriodController : ControllerBase
         DateTime endDate,
         CancellationToken cancellationToken)
     {
-        var request = new AddNewPeriodRequest(projectId, startDate, endDate);
+        var utcStartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+        var utcEndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+        
+        var request = new AddNewPeriodRequest(projectId, utcStartDate, utcEndDate);
 
         var result = await _addNewPeriodUseCase.Execute(request, cancellationToken);
         
@@ -97,7 +100,10 @@ public class ReviewPeriodController : ControllerBase
         DateTime endDate,
         CancellationToken cancellationToken)
     {
-        var request = new UpdateReviewPeriodDatesRequest(projectId, periodId, startDate, endDate);
+        var utcStartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+        var utcEndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+        
+        var request = new UpdateReviewPeriodDatesRequest(projectId, periodId, utcStartDate, utcEndDate);
         
         var result = await _updateReviewPeriodDatesUseCase.Execute(request, cancellationToken);
         

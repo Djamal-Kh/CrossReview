@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectAPI, projectMembersAPI, reviewPeriodAPI } from '../api/client';
+import { projectAPI, projectMembersAPI, reviewPeriodAPI, authAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { Project, ReviewPeriod } from '../types/types';
+import { Project, ReviewPeriod, User } from '../types/types';
 import { statusBadge, roleBadge } from '../utils/helpers';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -118,6 +118,74 @@ const AddPeriodModal: React.FC<ModalProps & { projectId: string }> = ({ projectI
     );
 };
 
+const AddMemberModal: React.FC<ModalProps & { projectId: string }> = ({ projectId, onClose }) => {
+    const qc = useQueryClient();
+    const [userId, setUserId] = useState('');
+    const [role, setRole] = useState('Developer');
+    const [error, setError] = useState('');
+
+    const { data: users } = useQuery({
+        queryKey: ['users'],
+        queryFn: () => authAPI.getAll(),
+        select: r => r.data,
+    });
+
+    const mutation = useMutation({
+        mutationFn: () => projectMembersAPI.addMember({ projectId, userId, role }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['members', projectId] });
+            qc.invalidateQueries({ queryKey: ['projects'] });
+            onClose();
+        },
+        onError: () => setError('Не удалось добавить участника'),
+    });
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                    <div className="modal-title">Добавить участника</div>
+                    <button className="btn-icon" onClick={onClose}>✕</button>
+                </div>
+
+                <div className="form-group">
+                    <label>Пользователь</label>
+                    <select value={userId} onChange={e => setUserId(e.target.value)}>
+                        <option value="">Выберите пользователя</option>
+                        {users?.map((u: User) => (
+                            <option key={u.id} value={u.id}>
+                                {u.firstName} {u.lastName} ({u.email})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label>Роль</label>
+                    <select value={role} onChange={e => setRole(e.target.value)}>
+                        <option value="Developer">Developer</option>
+                        <option value="Manager">Manager</option>
+                        <option value="TeamLead">TeamLead</option>
+                    </select>
+                </div>
+
+                {error && <div style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 12 }}>{error}</div>}
+
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                    <button className="btn btn-ghost" onClick={onClose}>Отмена</button>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => mutation.mutate()}
+                        disabled={!userId || mutation.isPending}
+                    >
+                        {mutation.isPending ? 'Добавление…' : 'Добавить'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // ── project detail panel ──────────────────────────────────────────────────────
 
 interface DetailProps {
@@ -130,6 +198,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
     const qc = useQueryClient();
     const [tab, setTab] = useState<'members' | 'periods'>('members');
     const [showAddPeriod, setShowAddPeriod] = useState(false);
+    const [showAddMember, setShowAddMember] = useState(false);
 
     const { data: membersData } = useQuery({
         queryKey: ['members', project.id],
@@ -165,6 +234,9 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
         <div className="fade-in">
             {showAddPeriod && (
                 <AddPeriodModal projectId={project.id} onClose={() => setShowAddPeriod(false)} />
+            )}
+            {showAddMember && (
+                <AddMemberModal projectId={project.id} onClose={() => setShowAddMember(false)} />
             )}
 
             {/* Breadcrumb */}
@@ -232,6 +304,11 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                             <div className="card-title">Участники проекта</div>
                             <div className="card-sub">{membersData?.length ?? 0} человек</div>
                         </div>
+                        {isAdmin && (
+                            <button className="btn btn-primary btn-sm" onClick={() => setShowAddMember(true)}>
+                                + Добавить
+                            </button>
+                        )}
                     </div>
                     {!membersData || membersData.length === 0 ? (
                         <div className="empty">
@@ -358,7 +435,6 @@ export const ProjectsPage: React.FC = () => {
         select: r => r.data,
     });
 
-    // If a project was selected, refresh it from cache after mutations
     const currentProject = selected
         ? projects?.find(p => p.id === selected.id) ?? selected
         : null;
@@ -456,7 +532,6 @@ export const ProjectsPage: React.FC = () => {
                             onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                                {/* Icon */}
                                 <div style={{
                                     width: 40, height: 40, borderRadius: 10, flexShrink: 0,
                                     background: p.status
@@ -468,7 +543,6 @@ export const ProjectsPage: React.FC = () => {
                                     ◫
                                 </div>
 
-                                {/* Info */}
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                                         <span style={{ fontWeight: 600, fontSize: 14 }}>{p.title}</span>
@@ -479,7 +553,6 @@ export const ProjectsPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Meta */}
                                 <div style={{ display: 'flex', gap: 20, flexShrink: 0, fontSize: 12, color: 'var(--text3)' }}>
                                     <div style={{ textAlign: 'center' }}>
                                         <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 15 }}>

@@ -114,12 +114,12 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ templateId, existing, onC
             Вес вопроса: <strong style={{ color: 'var(--accent)' }}>{weight}</strong>
           </label>
           <input
-            type="range" min={0.1} max={5} step={0.1} value={weight}
+            type="range" min={0.1} max={1} step={0.1} value={weight}
             onChange={e => setWeight(Number(e.target.value))}
             style={{ accentColor: 'var(--accent)' }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>
-            <span>0.1</span><span>5.0</span>
+            <span>0.1</span><span>1.0</span>
           </div>
         </div>
         {error && <div style={{ color: 'var(--danger)', fontSize: 12, marginBottom: 12 }}>{error}</div>}
@@ -249,7 +249,15 @@ const TemplateDetail: React.FC<DetailProps> = ({ template, projects, onBack }) =
         <div className="card-header">
           <div>
             <div className="card-title">Вопросы</div>
-            <div className="card-sub">{questions.length} вопросов · суммарный вес {tw.toFixed(1)}</div>
+            <div className="card-sub">
+    {questions.length} вопросов · суммарный вес {tw.toFixed(1)}
+    <span style={{ 
+        marginLeft: 8, 
+        color: Math.abs(tw - 10) < 0.001 ? 'var(--success)' : 'var(--warning)' 
+    }}>
+        {Math.abs(tw - 10) < 0.001 ? '✓ готов к активации' : `(нужно ровно 10.0)`}
+    </span>
+</div>
           </div>
           <button className="btn btn-primary btn-sm" onClick={() => setShowAddQuestion(true)}>
             + Добавить

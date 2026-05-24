@@ -21,7 +21,7 @@ public class AddQuestionValidator : AbstractValidator<AddQuestionRequest>
             .WithError(GeneralErrors.ValueTooShort(3, nameof(AddQuestionRequest.Title)));
         
         RuleFor(x => x.Weight)
-            .InclusiveBetween(0, 10)
+            .InclusiveBetween(0.1, 10)
             .WithError(GeneralErrors.ValueIsInvalid(nameof(AddQuestionRequest.Weight)))
             .Must(weight => weight >= 0)
             .WithError(GeneralErrors.ValueIsInvalid(nameof(AddQuestionRequest.Weight)));
