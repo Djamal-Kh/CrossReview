@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewAPI, projectAPI, templateAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { Review, ReviewAnswer } from '../types/types';
+import { Review, ReviewAnswer, } from '../types/types';
 import { statusBadge } from '../utils/helpers';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -202,7 +202,7 @@ const ReviewDetail: React.FC<DetailProps> = ({ review, isAdmin, onBack }) => {
                       <div style={{ marginTop: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                           <div style={{ display: 'flex', gap: 3 }}>
-                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                               <div key={n} style={{
                                 width: 14, height: 14, borderRadius: 3,
                                 background: n <= existing.score ? 'var(--accent)' : 'var(--bg3)',
@@ -403,22 +403,29 @@ export const ReviewsPage: React.FC = () => {
                   >
                     <td>
                       <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text3)' }}>
-                        {r.id.slice(0, 8)}…
+                        {/* 🌟 БЕЗОПАСНО: если ID пустой, не упадем */}
+                        {r.id ? `${r.id.slice(0, 8)}…` : '—'}
                       </span>
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className="avatar sm">{r.reviewerId.slice(0, 2).toUpperCase()}</div>
+                        {/* 🌟 БЕЗОПАСНО: аватарка из первых букв или '??' */}
+                        <div className="avatar sm">
+                          {r.reviewerId ? r.reviewerId.slice(0, 2).toUpperCase() : '??'}
+                        </div>
                         <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text2)' }}>
-                          {r.reviewerId.slice(0, 8)}…
+                          {r.reviewerId ? `${r.reviewerId.slice(0, 8)}…` : 'Не указан'}
                         </span>
                       </div>
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className="avatar sm">{r.revieweeId.slice(0, 2).toUpperCase()}</div>
+                        {/* 🌟 БЕЗОПАСНО: аватарка из первых букв или '??' */}
+                        <div className="avatar sm">
+                          {r.revieweeId ? r.revieweeId.slice(0, 2).toUpperCase() : '??'}
+                        </div>
                         <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text2)' }}>
-                          {r.revieweeId.slice(0, 8)}…
+                          {r.revieweeId ? `${r.revieweeId.slice(0, 8)}…` : 'Не указан'}
                         </span>
                       </div>
                     </td>

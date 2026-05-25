@@ -3,18 +3,34 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectAPI, projectMembersAPI, reviewPeriodAPI, authAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { Project, ReviewPeriod, User } from '../types/types';
-import { statusBadge, roleBadge } from '../utils/helpers';
+import { statusBadge, roleBadge } from '../utils/helpers'; // Возвращаем statusBadge для проекта
+import { ReviewPeriodStatus } from '../types/enums';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString('ru', { day: '2-digit', month: 'short', year: 'numeric' });
 
-const periodStatusBadge = (status: string) => {
-    const map: Record<string, string> = {
-        Draft: 'gray', Active: 'green', Closed: 'amber', Archive: 'red',
+// Новая логика для периодов на месте, мы её не трогаем
+const periodStatusBadge = (status: ReviewPeriodStatus) => {
+    const colorMap: Record<ReviewPeriodStatus, string> = {
+        [ReviewPeriodStatus.Draft]: 'gray',
+        [ReviewPeriodStatus.Active]: 'green',
+        [ReviewPeriodStatus.Closed]: 'amber',
+        [ReviewPeriodStatus.Archive]: 'red',
     };
-    return <span className={`badge badge-${map[status] ?? 'gray'}`}>{status}</span>;
+
+    const textMap: Record<ReviewPeriodStatus, string> = {
+        [ReviewPeriodStatus.Draft]: 'Draft',
+        [ReviewPeriodStatus.Active]: 'Active',
+        [ReviewPeriodStatus.Closed]: 'Closed',
+        [ReviewPeriodStatus.Archive]: 'Archive',
+    };
+
+    const color = colorMap[status] ?? 'gray';
+    const text = textMap[status] ?? 'Unknown';
+
+    return <span className={`badge badge-${color}`}>{text}</span>;
 };
 
 // ── modals ────────────────────────────────────────────────────────────────────
@@ -83,7 +99,11 @@ const AddPeriodModal: React.FC<ModalProps & { projectId: string }> = ({ projectI
 
     const mutation = useMutation({
         mutationFn: () => reviewPeriodAPI.create({ projectId, startDate, endDate }),
-        onSuccess: () => { qc.invalidateQueries({ queryKey: ['projects'] }); onClose(); },
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['projects'] });
+            qc.invalidateQueries({ queryKey: ['project', projectId] });
+            onClose();
+        },
         onError: () => setError('Не удалось создать период'),
     });
 
@@ -228,7 +248,8 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
         onSuccess: () => qc.invalidateQueries({ queryKey: ['projects'] }),
     });
 
-    const isActive = project.status;
+    // Возвращаем булевую логику: true — активен, false — закрыт
+    const isActive = !!project.status;
 
     return (
         <div className="fade-in">
@@ -252,6 +273,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                             <div style={{ fontSize: 18, fontWeight: 700 }}>{project.title}</div>
+                            {/* Откатили до передачи 'Active' / 'Closed' строк в хелпер */}
                             {statusBadge(isActive ? 'Active' : 'Closed')}
                         </div>
                         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
@@ -389,7 +411,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                     </div>
                                     {isAdmin && (
                                         <div style={{ display: 'flex', gap: 6 }}>
-                                            {p.status === 'Draft' && (
+                                            {p.status === ReviewPeriodStatus.Draft && (
                                                 <button
                                                     className="btn btn-ghost btn-sm"
                                                     onClick={() => activatePeriod.mutate(p.id)}
@@ -398,7 +420,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                                     ▶ Активировать
                                                 </button>
                                             )}
-                                            {p.status === 'Active' && (
+                                            {p.status === ReviewPeriodStatus.Active && (
                                                 <button
                                                     className="btn btn-danger btn-sm"
                                                     onClick={() => closePeriod.mutate(p.id)}
@@ -566,7 +588,7 @@ export const ProjectsPage: React.FC = () => {
                                         </div>
                                         <div>периодов</div>
                                     </div>
-                                    {p.reviewPeriods?.some(rp => rp.status === 'Active') && (
+                                    {p.reviewPeriods?.some(rp => rp.status === ReviewPeriodStatus.Active) && (
                                         <div style={{ textAlign: 'center' }}>
                                             <span className="badge badge-green">Период активен</span>
                                         </div>

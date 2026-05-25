@@ -144,6 +144,9 @@ export const reviewAPI = {
   
   close: (reviewId: string) =>
     apiClient.patch('/review/close', undefined, { params: { reviewId } }),
+
+  generate: (data: { projectId: string; periodId: string; templateId: string }) =>
+    apiClient.post('/review/generate', undefined, { params: data }),
 };
 
 // Template API

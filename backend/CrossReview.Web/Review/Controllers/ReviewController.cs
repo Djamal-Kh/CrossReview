@@ -1,7 +1,10 @@
-﻿using CrossReview.Application.Project.UseCases.CloseReviewPeriod;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using CrossReview.Application.Project.UseCases.CloseReviewPeriod;
 using CrossReview.Application.Review.UseCases.AddAnswerToReview;
 using CrossReview.Application.Review.UseCases.CloseReview;
 using CrossReview.Application.Review.UseCases.CreateReview;
+using CrossReview.Application.Review.UseCases.GenerateReviewsForPeriod;
 using CrossReview.Application.Review.UseCases.GetReviewByParameters;
 using CrossReview.Application.Review.UseCases.GetReviewsForProjectAndPeriod;
 using CrossReview.Application.Review.UseCases.GetReviewsForUser;
@@ -26,6 +29,7 @@ public class ReviewController : ControllerBase
     private readonly RemoveAnswerUseCase _removeAnswerUseCase;
     private readonly SubmitReviewUseCase _submitReviewUseCase;
     private readonly UpdateAnswerUseCase _updateAnswerUseCase;
+    private readonly GenerateReviewsForPeriodUseCase _generateReviewsForPeriodUseCase;
     
     public ReviewController(
         AddAnswerUseCase addAnswerUseCase,
@@ -36,7 +40,8 @@ public class ReviewController : ControllerBase
         GetReviewsForUserUseCase getReviewsForUserUseCase, 
         RemoveAnswerUseCase removeAnswerUseCase,
         SubmitReviewUseCase submitReviewUseCase, 
-        UpdateAnswerUseCase updateAnswerUseCase)
+        UpdateAnswerUseCase updateAnswerUseCase, 
+        GenerateReviewsForPeriodUseCase generateReviewsForPeriodUseCase)
     {
         _addAnswerUseCase = addAnswerUseCase;
         _closeReviewUseCase = closeReviewUseCase;
@@ -47,11 +52,47 @@ public class ReviewController : ControllerBase
         _removeAnswerUseCase = removeAnswerUseCase;
         _submitReviewUseCase = submitReviewUseCase;
         _updateAnswerUseCase = updateAnswerUseCase;
+        _generateReviewsForPeriodUseCase = generateReviewsForPeriodUseCase;
+    }
+    
+    [HttpPost]
+    [Route("generate")]
+    [Authorize]
+    public async Task<IActionResult> Generate(
+        Guid projectId,
+        Guid periodId,
+        Guid templateId,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetCurrentUserId();
+    
+        if (userId is null)
+            return Unauthorized();
+
+        var isAdmin = User.IsInRole("Admin");
+        
+        var request = new GenerateReviewsForPeriodRequest(
+            projectId, periodId, templateId, userId.Value, isAdmin);
+
+        var result = await _generateReviewsForPeriodUseCase.Execute(request, cancellationToken);
+
+        if (result.IsFailure)
+            return BadRequest(result.Error);
+
+        return Ok(new { created = result.Value });
+    }
+
+    private Guid? GetCurrentUserId()
+    {
+        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                  ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    
+        return Guid.TryParse(sub, out var id) ? id : null;
     }
     
     [HttpPost]
     [Route("create")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Create(
         Guid reviewerId,
         Guid revieweeId,

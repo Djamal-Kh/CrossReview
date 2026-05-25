@@ -27,6 +27,8 @@ public class ActivateReviewPeriodUseCase
         
         project.ActivateReviewPeriod(request.PeriodId);
 
+        await _projectRepository.SaveAsync(cancellationToken);
+        
         _logger.LogInformation("ReviewPeriod with Id: {Id} was activated", request.PeriodId);
         
         return request.PeriodId;

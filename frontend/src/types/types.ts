@@ -1,3 +1,5 @@
+import { ReviewPeriodStatus } from './enums';
+
 // User types
 export interface User {
   id: string;
@@ -30,7 +32,7 @@ export interface Project {
   id: string;
   title: string;
   description: string;
-  status: boolean; // true = Active, false = Closed
+  status: boolean;
   members: ProjectMember[];
   reviewPeriods: ReviewPeriod[];
 }
@@ -43,7 +45,7 @@ export interface ProjectMember {
 export interface ReviewPeriod {
   id: string;
   name: string;
-  status: 'Draft' | 'Active' | 'Closed' | 'Archive';
+  status: ReviewPeriodStatus
   startDate: string;
   endDate: string;
 }
@@ -71,6 +73,7 @@ export interface Review {
   revieweeId: string;
   projectId: string;
   periodId: string;
+  templateId?: string;
   status: 'Draft' | 'Submitted' | 'Closed';
   answers: ReviewAnswer[];
 }
