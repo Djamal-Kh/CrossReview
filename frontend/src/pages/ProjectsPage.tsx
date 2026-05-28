@@ -220,6 +220,16 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
     const [showAddPeriod, setShowAddPeriod] = useState(false);
     const [showAddMember, setShowAddMember] = useState(false);
 
+    // Загружаем полные данные проекта
+    const { data: fullProject, isLoading: projectLoading } = useQuery({
+        queryKey: ['project', project.id],
+        queryFn: () => projectAPI.getById(project.id),
+        select: r => r.data,
+    });
+
+    const currentProject = fullProject ?? project;
+    const isActive = !!currentProject.status;
+
     const { data: membersData } = useQuery({
         queryKey: ['members', project.id],
         queryFn: () => projectMembersAPI.getMembers(project.id),
@@ -228,28 +238,45 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
 
     const startMutation = useMutation({
         mutationFn: () => projectAPI.start(project.id),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ['projects'] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['projects'] });
+            qc.invalidateQueries({ queryKey: ['project', project.id] });
+        },
     });
 
     const closeMutation = useMutation({
         mutationFn: () => projectAPI.close(project.id),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ['projects'] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['projects'] });
+            qc.invalidateQueries({ queryKey: ['project', project.id] });
+        },
     });
 
     const activatePeriod = useMutation({
         mutationFn: (periodId: string) =>
             reviewPeriodAPI.activate(project.id, periodId),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ['projects'] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['projects'] });
+            qc.invalidateQueries({ queryKey: ['project', project.id] });
+        },
     });
 
     const closePeriod = useMutation({
         mutationFn: (periodId: string) =>
             reviewPeriodAPI.close(project.id, periodId),
-        onSuccess: () => qc.invalidateQueries({ queryKey: ['projects'] }),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['projects'] });
+            qc.invalidateQueries({ queryKey: ['project', project.id] });
+        },
     });
 
-    // Возвращаем булевую логику: true — активен, false — закрыт
-    const isActive = !!project.status;
+    if (projectLoading) {
+        return (
+            <div style={{ color: 'var(--text3)', padding: '40px 0', textAlign: 'center' }}>
+                Загрузка…
+            </div>
+        );
+    }
 
     return (
         <div className="fade-in">
@@ -260,28 +287,25 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                 <AddMemberModal projectId={project.id} onClose={() => setShowAddMember(false)} />
             )}
 
-            {/* Breadcrumb */}
             <div className="breadcrumb">
                 <span onClick={onBack}>Проекты</span>
                 <span className="breadcrumb-sep">›</span>
-                <span style={{ color: 'var(--text2)' }}>{project.title}</span>
+                <span style={{ color: 'var(--text2)' }}>{currentProject.title}</span>
             </div>
 
-            {/* Header */}
             <div className="card" style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                            <div style={{ fontSize: 18, fontWeight: 700 }}>{project.title}</div>
-                            {/* Откатили до передачи 'Active' / 'Closed' строк в хелпер */}
+                            <div style={{ fontSize: 18, fontWeight: 700 }}>{currentProject.title}</div>
                             {statusBadge(isActive ? 'Active' : 'Closed')}
                         </div>
                         <div style={{ fontSize: 13, color: 'var(--text2)' }}>
-                            {project.description || <span style={{ color: 'var(--text3)' }}>Без описания</span>}
+                            {currentProject.description || <span style={{ color: 'var(--text3)' }}>Без описания</span>}
                         </div>
                         <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 12, color: 'var(--text3)' }}>
-                            <span>◫ {project.members?.length ?? 0} участников</span>
-                            <span>◷ {project.reviewPeriods?.length ?? 0} периодов</span>
+                            <span>◫ {currentProject.members?.length ?? 0} участников</span>
+                            <span>◷ {currentProject.reviewPeriods?.length ?? 0} периодов</span>
                         </div>
                     </div>
                     {isAdmin && (
@@ -308,7 +332,6 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                 </div>
             </div>
 
-            {/* Tabs */}
             <div className="tabs">
                 <button className={`tab ${tab === 'members' ? 'active' : ''}`} onClick={() => setTab('members')}>
                     Участники
@@ -318,7 +341,6 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                 </button>
             </div>
 
-            {/* Members tab */}
             {tab === 'members' && (
                 <div className="card">
                     <div className="card-header">
@@ -375,13 +397,12 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                 </div>
             )}
 
-            {/* Periods tab */}
             {tab === 'periods' && (
                 <div className="card">
                     <div className="card-header">
                         <div>
                             <div className="card-title">Периоды ревью</div>
-                            <div className="card-sub">{project.reviewPeriods?.length ?? 0} периодов</div>
+                            <div className="card-sub">{currentProject.reviewPeriods?.length ?? 0} периодов</div>
                         </div>
                         {isAdmin && (
                             <button className="btn btn-primary btn-sm" onClick={() => setShowAddPeriod(true)}>
@@ -389,14 +410,14 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                             </button>
                         )}
                     </div>
-                    {!project.reviewPeriods || project.reviewPeriods.length === 0 ? (
+                    {!currentProject.reviewPeriods || currentProject.reviewPeriods.length === 0 ? (
                         <div className="empty">
                             <div className="empty-icon">◷</div>
                             <p>Нет периодов ревью</p>
                         </div>
                     ) : (
                         <div className="period-list">
-                            {project.reviewPeriods.map((p: ReviewPeriod) => (
+                            {currentProject.reviewPeriods.map((p: ReviewPeriod) => (
                                 <div key={p.id} className="period-item">
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                         {periodStatusBadge(p.status)}

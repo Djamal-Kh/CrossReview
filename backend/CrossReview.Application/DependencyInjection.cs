@@ -19,10 +19,7 @@ using CrossReview.Application.Project.UseCases.UpdateProjectTitle;
 using CrossReview.Application.Project.UseCases.UpdateReviewPeriodDates;
 using CrossReview.Application.Review.UseCases.AddAnswerToReview;
 using CrossReview.Application.Review.UseCases.CalculateEvaluationResult;
-using CrossReview.Application.Review.UseCases.CloseAllReviewsForPeriod;
-using CrossReview.Application.Review.UseCases.CloseReview;
 using CrossReview.Application.Review.UseCases.CreateReview;
-using CrossReview.Application.Review.UseCases.GenerateReviewsForPeriod;
 using CrossReview.Application.Review.UseCases.GetEvaluationResult;
 using CrossReview.Application.Review.UseCases.GetReviewByParameters;
 using CrossReview.Application.Review.UseCases.GetReviewsForProjectAndPeriod;
@@ -72,7 +69,7 @@ public static class DependencyInjection
         services.AddScoped<AssignNewProjectMemberUseCase>();
         services.AddScoped<ChangeProjectMemberRoleUseCase>();
         services.AddScoped<CloseProjectUseCase>();
-        services.AddScoped<CloseReviewPeriodUseCase>();
+        services.AddScoped<Project.UseCases.CloseReviewPeriod.CloseReviewPeriodUseCase>();
         services.AddScoped<CreateProjectUseCase>();
         services.AddScoped<DeactivateProjectMemberUseCase>();
         services.AddScoped<DeleteProjectUseCase>();
@@ -92,8 +89,6 @@ public static class DependencyInjection
         // Review
         services.AddScoped<AddAnswerUseCase>();
         services.AddScoped<CalculateEvaluationResultUseCase>();
-        services.AddScoped<CloseAllReviewsForPeriodUseCase>(); // недоделанный
-        services.AddScoped<CloseReviewUseCase>();
         services.AddScoped<CreateReviewUseCase>();
         services.AddScoped<GenerateReviewsForPeriodUseCase>(); // недоделанный
         services.AddScoped<GetEvaluationResultUseCase>();

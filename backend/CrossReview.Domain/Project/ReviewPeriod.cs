@@ -68,11 +68,6 @@ public class ReviewPeriod
         if (Status is not EnumReviewPeriodStatus.Active)
             throw new ValidationException("Закрыть можно только активный ревью");
         
-        var currentTime = DateTime.UtcNow;
-
-        if (currentTime < EndDate)
-            throw new ValidationException("Нельзя закрыть ревью раньше назначенного времени");
-        
         Status = EnumReviewPeriodStatus.Closed;
     }
 

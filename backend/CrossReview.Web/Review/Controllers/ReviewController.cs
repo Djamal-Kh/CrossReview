@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using CrossReview.Application.Project.UseCases.CloseReviewPeriod;
 using CrossReview.Application.Review.UseCases.AddAnswerToReview;
-using CrossReview.Application.Review.UseCases.CloseReview;
 using CrossReview.Application.Review.UseCases.CreateReview;
 using CrossReview.Application.Review.UseCases.GenerateReviewsForPeriod;
 using CrossReview.Application.Review.UseCases.GetReviewByParameters;
@@ -21,7 +20,6 @@ namespace CrossReview.Review.Controllers;
 public class ReviewController : ControllerBase
 {
     private readonly AddAnswerUseCase _addAnswerUseCase;
-    private readonly CloseReviewUseCase _closeReviewUseCase;
     private readonly CreateReviewUseCase _createReviewUseCase;
     private readonly GetReviewByParametersUseCase _getReviewByParametersUseCase;
     private readonly GetProjectReviewsUseCase _getProjectReviewsUseCase;
@@ -33,7 +31,6 @@ public class ReviewController : ControllerBase
     
     public ReviewController(
         AddAnswerUseCase addAnswerUseCase,
-        CloseReviewUseCase closeReviewUseCase,
         CreateReviewUseCase createReviewUseCase,
         GetReviewByParametersUseCase getReviewByParametersUseCase, 
         GetProjectReviewsUseCase getProjectReviewsUseCase, 
@@ -44,7 +41,6 @@ public class ReviewController : ControllerBase
         GenerateReviewsForPeriodUseCase generateReviewsForPeriodUseCase)
     {
         _addAnswerUseCase = addAnswerUseCase;
-        _closeReviewUseCase = closeReviewUseCase;
         _createReviewUseCase = createReviewUseCase;
         _getReviewByParametersUseCase = getReviewByParametersUseCase;
         _getProjectReviewsUseCase = getProjectReviewsUseCase;
@@ -185,23 +181,6 @@ public class ReviewController : ControllerBase
         var result = await _getReviewsForUserUseCase.Execute(request, cancellationToken);
         
         return Ok(result);
-    }
-    
-    [HttpPatch]
-    [Route("close")]
-    [Authorize]
-    public async Task<IActionResult> Close(
-        Guid reviewId,
-        CancellationToken cancellationToken)
-    {
-        var request = new CloseReviewRequest(reviewId);
-
-        var result = await _closeReviewUseCase.Execute(request, cancellationToken);
-        
-        if (result.IsFailure)
-            return BadRequest(result.Error);
-        
-        return Ok(result.Value);
     }
 
     [HttpPatch]

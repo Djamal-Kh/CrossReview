@@ -47,7 +47,6 @@ public class ReviewRepository(CrossReviewDbContext context) : IReviewRepository
         CancellationToken cancellationToken = default)
     {
         var query = context.Reviews
-            .AsNoTracking()
             .Include(r => r.Answers)
             .AsQueryable();
 
