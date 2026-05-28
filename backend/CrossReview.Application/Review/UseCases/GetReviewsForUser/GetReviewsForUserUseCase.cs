@@ -18,16 +18,26 @@ public class GetReviewsForUserUseCase
         _logger = logger;
         _reviewRepository = reviewRepository;
     }
-    public async Task<List<ReviewForRevieweeDto>> Execute(GetReviewsForUserRequest request,
+    public async Task<List<ReviewDto>> Execute(GetReviewsForUserRequest request,
         CancellationToken cancellationToken)
     {
         var reviews = await _reviewRepository.GetAllAsync(request.UserId, request.ProjectId, request.PeriodId);
         
-        var result = reviews.Select(r => new ReviewForRevieweeDto
+        var result = reviews.Select(r => new ReviewDto
         {
             Id = r.Id,
+            ReviewerId = r.ReviewerId,
+            RevieweeId = r.RevieweeId,
+            ProjectId = r.ProjectId,
+            TemplateId = r.TemplateId,
+            PeriodId = r.PeriodId,
             Status = r.Status,
-            Answers = r.Answers
+            Answers = r.Answers.Select(a => new ReviewAnswerDto
+            {
+                QuestionId = a.QuestionId,
+                Score = a.Score,
+                Comment = a.Comment,
+            }).ToList()
         }).ToList();
         
         return result;

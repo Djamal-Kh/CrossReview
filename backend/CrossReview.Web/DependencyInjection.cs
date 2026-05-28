@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CrossReview.Application;
 using CrossReview.Application.User;
 using Crossreview.Infrastructure.Identity;
@@ -57,6 +58,13 @@ public static class DependencyInjection
             });
         });
 
+        // Добавляем глобальный конвертер для Enum в JSON
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+        
         /*services.AddControllers()
             .AddJsonOptions(options =>
             {

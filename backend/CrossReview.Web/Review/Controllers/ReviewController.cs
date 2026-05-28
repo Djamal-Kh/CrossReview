@@ -113,7 +113,7 @@ public class ReviewController : ControllerBase
     
     [HttpPost]
     [Route("answer/add")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> AddAnswer(
         Guid reviewId, 
         Guid questionId,
@@ -224,7 +224,7 @@ public class ReviewController : ControllerBase
 
     [HttpPatch]
     [Route("submit")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Submit(
         Guid reviewId,
         Guid templateId,

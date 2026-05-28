@@ -128,7 +128,7 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("all")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var result = await _getAllUsersUseCase.Execute();

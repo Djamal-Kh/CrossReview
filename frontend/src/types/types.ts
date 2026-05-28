@@ -1,6 +1,5 @@
 import { ReviewPeriodStatus } from './enums';
 
-// User types
 export interface User {
   id: string;
   firstName: string;
@@ -27,7 +26,6 @@ export interface RegisterRequest {
   phoneNumber?: string;
 }
 
-// Project types
 export interface Project {
   id: string;
   title: string;
@@ -45,12 +43,11 @@ export interface ProjectMember {
 export interface ReviewPeriod {
   id: string;
   name: string;
-  status: ReviewPeriodStatus
+  status: ReviewPeriodStatus;
   startDate: string;
   endDate: string;
 }
 
-// Template types
 export interface Template {
   id: string;
   projectId: string;
@@ -66,13 +63,13 @@ export interface TemplateQuestion {
   order: number;
 }
 
-// Review types
 export interface Review {
   id: string;
   reviewerId: string;
   revieweeId: string;
   projectId: string;
   periodId: string;
+  // templateId comes from backend — mark as optional for safety (old reviews may lack it)
   templateId?: string;
   status: 'Draft' | 'Submitted' | 'Closed';
   answers: ReviewAnswer[];
@@ -84,7 +81,6 @@ export interface ReviewAnswer {
   comment: string;
 }
 
-// Result types
 export interface EvaluationResult {
   id: string;
   userId: string;
@@ -94,7 +90,6 @@ export interface EvaluationResult {
   calculatedAt: string;
 }
 
-// API Response type
 export interface ApiResponse<T> {
   success: boolean;
   data: T;

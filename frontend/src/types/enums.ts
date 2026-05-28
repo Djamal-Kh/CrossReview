@@ -1,6 +1,7 @@
+// Чтобы не переделывать на странице ProjectPage
 export enum ReviewPeriodStatus {
-    Active = 0,
-    Closed = 1,
-    Draft = 2,
-    Archive = 3
+    Active = 'Active',
+    Closed = 'Closed',
+    Draft = 'Draft',
+    Archive = 'Archive'
 }
