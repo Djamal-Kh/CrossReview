@@ -27,6 +27,7 @@ public class TemplateEntity
     // для ef core
     private TemplateEntity() {}
     
+    // todo сделать вместо ссылки на один проект (ProjectId) список проектов (List<ProjectId>)
     public Guid Id { get; }
     public Guid ProjectId {get; private set;}
     public string Title { get; private set; }

@@ -20,6 +20,8 @@ public class ReviewAnswer
     // для ef core
     private ReviewAnswer () {} 
     
+    // todo реализовать анонимность на уровне БД. Для этого убрать поле ReviewId или зашифровать его ?
+    
     public Guid QuestionId { get; }
     public Guid ReviewId { get; private set; }
     public int Score { get; private set; }
