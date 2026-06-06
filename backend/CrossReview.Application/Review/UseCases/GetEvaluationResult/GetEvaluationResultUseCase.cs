@@ -19,25 +19,22 @@ public class GetEvaluationResultUseCase
         _evaluationResultRepository = evaluationResultRepository;
     }
 
-    public async Task<Result<EvaluationResultDto, Errors>> Execute(GetEvaluationResultRequest request,
+    public async Task<Result<List<EvaluationResultDto>, Errors>> Execute(GetEvaluationResultRequest request,
         CancellationToken cancellationToken)
     {
-        var evResult = await _evaluationResultRepository
-            .GetByParametersAsync(request.UserId, request.ProjectId, request.PeriodId, cancellationToken);
-
-        if (evResult is null)
-            return GeneralErrors.NotFound(request.UserId).ToErrors();
-
-        var result = new EvaluationResultDto
+        var evResults = await _evaluationResultRepository
+            .GetByUserIdAsync(request.UserId, cancellationToken);
+        
+        var resultDtos = evResults.Select(evResult => new EvaluationResultDto
         {
             Id = evResult.Id,
             UserId = evResult.UserId,
             ProjectId = evResult.ProjectId,
-            PeriodId =  evResult.PeriodId,
+            PeriodId = evResult.PeriodId,
             FinalScore = evResult.FinalScore,
-            CalculatedAt =  evResult.CalculatedAt,
-        };
+            CalculatedAt = evResult.CalculatedAt,
+        }).ToList();
         
-        return result;
+        return resultDtos;
     }
 }

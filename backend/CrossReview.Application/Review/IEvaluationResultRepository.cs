@@ -11,5 +11,6 @@ public interface IEvaluationResultRepository
     public Task<EvaluationResultEntity?> GetByParametersAsync(Guid userId, Guid projectId, Guid periodId, CancellationToken cancellationToken = default);
     public Task<EvaluationResultEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     public Task<List<EvaluationResultEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+    public Task<List<EvaluationResultEntity>> GetByUserIdAsync(Guid? userId, CancellationToken cancellationToken = default);
     public Task<Guid?> DeleteAsync(EvaluationResultEntity evaluationResult, CancellationToken cancellationToken = default);
 }

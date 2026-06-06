@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, Cell, PieChart, Pie } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, Cell, PieChart, Pie } from 'recharts';
 import { projectAPI, reviewAPI, resultAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { ScoreBar } from '../utils/helpers';
@@ -8,11 +8,19 @@ import { ScoreBar } from '../utils/helpers';
 const PAGE_TITLE = 'Дашборд';
 const PAGE_SUB = 'Обзор производительности команды';
 
+interface MetricResult {
+  id: string;
+  userId: string | { id: string; name?: string };
+  user?: { name: string };
+  finalScore: number;
+  calculatedAt: string;
+}
+
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'Admin';
 
-  // Fetch data
+  // Запросы данных с безопасными ключами и флагами активации
   const { data: projectsData } = useQuery({
     queryKey: ['projects'],
     queryFn: () => projectAPI.getAll(),
@@ -20,27 +28,33 @@ export const DashboardPage: React.FC = () => {
   });
 
   const { data: reviewsData } = useQuery({
-    queryKey: ['reviews'],
+    queryKey: ['reviews', user?.id],
     queryFn: () => reviewAPI.getByReviewers({ userId: user?.id || '' }),
     select: (response) => response.data,
+    enabled: !!user?.id,
   });
 
   const { data: resultsData } = useQuery({
-    queryKey: ['results'],
-    queryFn: () => resultAPI.getResults(isAdmin ? {} : { userId: user?.id }),
+    queryKey: ['results', user?.id, isAdmin],
+    queryFn: () => isAdmin
+      ? resultAPI.getAll()
+      : resultAPI.getResults({ userId: user?.id }),
     select: (response) => response.data,
+    enabled: !!user?.id,
   });
 
-  // Calculate stats
+  // Безопасный расчет базовых метрик
   const activeProjects = useMemo(() => projectsData?.filter(p => p.status).length ?? 0, [projectsData]);
   const totalReviews = reviewsData?.length ?? 0;
   const closedReviews = useMemo(() => reviewsData?.filter(r => r.status === 'Closed').length ?? 0, [reviewsData]);
+
   const avgScore = useMemo(() => {
     if (!resultsData || resultsData.length === 0) return 0;
-    return resultsData.reduce((a, r) => a + r.finalScore, 0) / resultsData.length;
+    const total = resultsData.reduce((a: number, r: MetricResult) => a + (r.finalScore || 0), 0);
+    return total / resultsData.length;
   }, [resultsData]);
 
-  // Chart data
+  // Статические данные для графиков активности (Ревью)
   const barData = [
     { month: 'Янв', reviews: 4, closed: 3 },
     { month: 'Фев', reviews: 6, closed: 5 },
@@ -49,6 +63,7 @@ export const DashboardPage: React.FC = () => {
     { month: 'Май', reviews: 9, closed: 6 },
   ];
 
+  // Возвращен зашитый хардкод по вашему запросу
   const radarData = [
     { subject: 'Код', A: 8.4 },
     { subject: 'Дедлайны', A: 7.8 },
@@ -57,15 +72,39 @@ export const DashboardPage: React.FC = () => {
     { subject: 'Качество', A: 8.6 },
   ];
 
-  const pieData = [
-    { name: 'Closed', value: closedReviews, fill: '#22c55e' },
-    { name: 'Submitted', value: 1, fill: '#f59e0b' },
-    { name: 'Draft', value: Math.max(0, totalReviews - closedReviews - 1), fill: '#5a6278' },
-  ];
+  // Динамическое распределение по реальным статусам
+  const pieData = useMemo(() => {
+    const submittedCount = reviewsData?.filter(r => r.status === 'Submitted').length ?? 0;
+    const draftCount = reviewsData?.filter(r => r.status === 'Draft').length ?? 0;
 
+    return [
+      { name: 'Closed', value: closedReviews, fill: '#22c55e' },
+      { name: 'Submitted', value: submittedCount, fill: '#f59e0b' },
+      { name: 'Draft', value: draftCount, fill: '#5a6278' },
+    ];
+  }, [reviewsData, closedReviews]);
+
+  // Безопасная сортировка топа результатов
   const topResults = useMemo(() => {
-    return (resultsData ?? []).sort((a, b) => b.finalScore - a.finalScore).slice(0, 3);
+    return [...(resultsData ?? [])]
+      .sort((a: MetricResult, b: MetricResult) => (b.finalScore || 0) - (a.finalScore || 0))
+      .slice(0, 3);
   }, [resultsData]);
+
+  // Хелперы для безопасного парсинга имен пользователей без падения UI
+  const renderUserIdentity = (r: MetricResult) => {
+    if (r.user?.name) return r.user.name;
+    if (typeof r.userId === 'object' && r.userId?.name) return r.userId.name;
+    if (typeof r.userId === 'string') return `Сотрудник ID: ${r.userId.slice(0, 8)}`;
+    return 'Сотрудник';
+  };
+
+  const renderAvatarLetters = (r: MetricResult) => {
+    if (r.user?.name) return r.user.name.slice(0, 2).toUpperCase();
+    if (typeof r.userId === 'object' && r.userId?.name) return r.userId.name.slice(0, 2).toUpperCase();
+    if (typeof r.userId === 'string') return r.userId.slice(0, 2).toUpperCase();
+    return '??';
+  };
 
   return (
     <div className="fade-in">
@@ -123,8 +162,9 @@ export const DashboardPage: React.FC = () => {
           <ResponsiveContainer width="100%" height={180}>
             <RadarChart data={radarData}>
               <PolarGrid stroke="rgba(255,255,255,0.07)" />
-              <PolarAngleAxis dataKey="subject" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#5a6278', fontSize: 11 }} />
               <Radar dataKey="A" fill="rgba(79,124,255,0.2)" stroke="#4f7cff" strokeWidth={2} />
+              <Tooltip contentStyle={{ background: '#1e2535', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, color: '#e8eaf0', fontSize: 12 }} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -162,21 +202,52 @@ export const DashboardPage: React.FC = () => {
           <div className="card-header">
             <div>
               <div className="card-title">Топ результаты</div>
-              <div className="card-sub">За последний период</div>
+              <div className="card-sub">Лучшие показатели за все время</div>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {topResults.length === 0 ? (
-              <div style={{ color: 'var(--text3)', fontSize: 12 }}>Нет результатов</div>
+              <div style={{ color: 'var(--text3)', fontSize: 14, padding: '16px 0' }}>
+                Нет рассчитанных результатов
+              </div>
             ) : (
-              topResults.map(r => (
-                <div key={r.id}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                    <div className="avatar sm">{r.userId.slice(0, 2).toUpperCase()}</div>
-                    <span style={{ fontSize: 12, flex: 1 }}>Сотрудник {r.userId.slice(0, 8)}</span>
-                    <span style={{ fontSize: 11, color: 'var(--text3)' }}>{new Date(r.calculatedAt).toLocaleDateString('ru')}</span>
+              topResults.map((r: MetricResult, index: number) => (
+                <div
+                  key={r.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '14px 0', // Увеличили вертикальный отступ для баланса
+                    borderBottom: index < topResults.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    {/* Номер в топе — теперь крупнее и заметнее */}
+                    <span style={{ fontSize: 13, fontWeight: 700, color: index === 0 ? 'var(--accent2)' : 'var(--text3)', width: 20 }}>
+                      #{index + 1}
+                    </span>
+                    {/* Дата — увеличили до комфортных 15px */}
+                    <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text2)' }}>
+                      {r.calculatedAt
+                        ? new Date(r.calculatedAt).toLocaleDateString('ru', { day: 'numeric', month: 'long', year: 'numeric' })
+                        : '—'}
+                    </span>
                   </div>
-                  <ScoreBar score={r.finalScore} />
+                  {/* Балл — теперь 16px, выглядит весомо */}
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      color: 'var(--accent2)',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      padding: '6px 12px', // Чуть просторнее внутри бейджа
+                      borderRadius: 6,
+                      border: '1px solid rgba(255, 255, 255, 0.08)'
+                    }}
+                  >
+                    {r.finalScore.toFixed(1)}
+                  </div>
                 </div>
               ))
             )}

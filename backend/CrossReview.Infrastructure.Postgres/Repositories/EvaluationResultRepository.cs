@@ -48,6 +48,13 @@ public class EvaluationResultRepository(CrossReviewDbContext context) : IEvaluat
         return results;
     }
 
+    public async Task<List<EvaluationResultEntity>> GetByUserIdAsync(Guid? userId, CancellationToken cancellationToken = default)
+    {
+        return await context.EvaluationResults
+            .Where(er => er.UserId == userId)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Guid?> DeleteAsync(EvaluationResultEntity evaluationResult, CancellationToken cancellationToken = default)
     {
         context.EvaluationResults.Remove(evaluationResult);

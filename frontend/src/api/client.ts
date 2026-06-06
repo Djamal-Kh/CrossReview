@@ -185,9 +185,19 @@ export const templateAPI = {
 
 // Evaluation Result API
 export const resultAPI = {
+
+  getAll: () =>
+    apiClient.get<EvaluationResult[]>('/review/evaluation-result/all'),
+
   getResults: (data: { userId?: string; projectId?: string; periodId?: string }) =>
     apiClient.get<EvaluationResult[]>('/review/evaluation-result/by-parameters', { params: data }),
   
+  getMy: () =>
+    apiClient.get<EvaluationResult[]>('/review/evaluation-result/my'),
+
+  getByProject: (projectId: string) =>
+    apiClient.get<EvaluationResult[]>(`/review/evaluation-result/by-project/${projectId}`),
+
   calculate: (data: { userId: string; projectId: string; periodId: string }) =>
     apiClient.post('/review/evaluation-result/calculate', undefined, { params: data }),
   

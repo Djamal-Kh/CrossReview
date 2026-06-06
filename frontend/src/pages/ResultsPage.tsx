@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { resultAPI, projectAPI } from '../api/client';
+import React, { useMemo, useState } from 'react';
+import { useQuery, useMutation, useQueryClient, useQueries } from '@tanstack/react-query';
+import { resultAPI, projectAPI, authAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { EvaluationResult, Project } from '../types/types';
+import { EvaluationResult, Project, User } from '../types/types';
 import { ScoreBar } from '../utils/helpers';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -102,9 +102,10 @@ interface DetailProps {
   result: EvaluationResult;
   onBack: () => void;
   isAdmin: boolean;
+  users: User[]; // Передаем пользователей для расшифровки GUID
 }
 
-const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin }) => {
+const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin, users }) => {
   const qc = useQueryClient();
 
   const { data: project } = useQuery({
@@ -119,11 +120,19 @@ const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin }) => {
   });
 
   const period = project?.reviewPeriods?.find(p => p.id === result.periodId);
+  
+  // Поиск человекочитаемого имени пользователя
+  const u = users.find(usr => usr.id === result.userId);
+  const userName = u ? `${u.firstName} ${u.lastName}` : result.userId;
+  const projectTitle = project?.title ?? result.projectId;
+  const periodName = period 
+    ? `${new Date(period.startDate).toLocaleDateString('ru')} — ${new Date(period.endDate).toLocaleDateString('ru')}`
+    : result.periodId;
 
   return (
     <div className="fade-in">
       <div className="breadcrumb">
-        <span onClick={onBack}>Результаты</span>
+        <span onClick={onBack} style={{ cursor: 'pointer' }}>Результаты</span>
         <span className="breadcrumb-sep">›</span>
         <span style={{ color: 'var(--text2)' }}>
           {project?.title ?? result.projectId.slice(0, 8)}
@@ -154,7 +163,7 @@ const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12 }}>
               <div>
                 <span style={{ color: 'var(--text3)' }}>Пользователь: </span>
-                <span style={{ fontFamily: 'var(--mono)' }}>{result.userId}</span>
+                <span style={{ fontWeight: 500, fontFamily: u ? 'inherit' : 'var(--mono)' }}>{userName}</span>
               </div>
               <div>
                 <span style={{ color: 'var(--text3)' }}>Период: </span>
@@ -202,8 +211,8 @@ const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin }) => {
             {result.finalScore >= 8
               ? '🟢 Отличный результат'
               : result.finalScore >= 6
-              ? '🟡 Хороший результат'
-              : '🔴 Требует внимания'}
+                ? '🟡 Хороший результат'
+                : '🔴 Требует внимания'}
           </div>
         </div>
       </div>
@@ -213,14 +222,22 @@ const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin }) => {
         <div className="card-title" style={{ marginBottom: 16 }}>Детали</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
-            { label: 'ID результата', value: result.id },
-            { label: 'ID пользователя', value: result.userId },
-            { label: 'ID проекта', value: result.projectId },
-            { label: 'ID периода', value: result.periodId },
-          ].map(({ label, value }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12 }}>
-              <span style={{ color: 'var(--text3)' }}>{label}</span>
-              <span style={{ fontFamily: 'var(--mono)', color: 'var(--text2)', fontSize: 11 }}>{value}</span>
+            { label: 'Сотрудник', value: userName, isMono: !u },
+            { label: 'Проект', value: projectTitle, isMono: !project },
+            { label: 'Период оценки', value: periodName, isMono: !period },
+            { label: 'ID записи результата', value: result.id, isMono: true },
+          ].map(({ label, value, isMono }) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, gap: 16 }}>
+              <span style={{ color: 'var(--text3)', flexShrink: 0 }}>{label}</span>
+              <span style={{ 
+                fontFamily: isMono ? 'var(--mono)' : 'inherit', 
+                color: 'var(--text2)', 
+                fontSize: 11,
+                textAlign: 'right',
+                wordBreak: 'break-all' 
+              }}>
+                {value}
+              </span>
             </div>
           ))}
         </div>
@@ -234,16 +251,9 @@ const ResultDetail: React.FC<DetailProps> = ({ result, onBack, isAdmin }) => {
 export const ResultsPage: React.FC = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'Admin';
-  const qc = useQueryClient();
   const [selected, setSelected] = useState<EvaluationResult | null>(null);
   const [showCalc, setShowCalc] = useState(false);
   const [sortBy, setSortBy] = useState<'score' | 'date'>('date');
-
-  const { data: results, isLoading } = useQuery({
-    queryKey: ['results'],
-    queryFn: () => resultAPI.getResults(isAdmin ? {} : { userId: user?.id }),
-    select: r => r.data,
-  });
 
   const { data: projects } = useQuery({
     queryKey: ['projects'],
@@ -251,11 +261,97 @@ export const ResultsPage: React.FC = () => {
     select: r => r.data,
   });
 
-  const sorted = [...(results ?? [])].sort((a, b) =>
-    sortBy === 'score'
-      ? b.finalScore - a.finalScore
-      : new Date(b.calculatedAt).getTime() - new Date(a.calculatedAt).getTime()
-  );
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => authAPI.getAll(),
+    select: r => r.data as User[],
+  });
+
+  // Вспомогательная функция для мягкой проверки роли руководителя
+  const isLeadRole = (role?: string) => {
+    if (!role) return false;
+    const r = role.toLowerCase();
+    return r === 'teamlead' || r === 'manager' || r === 'projectmanager';
+  };
+
+  // Проверяем, пришли ли вообще данные об участниках с бэкенда
+  const hasMembersData = useMemo(() => {
+    return projects?.some(p => p.members && p.members.length > 0) ?? false;
+  }, [projects]);
+
+  // Определяем массив ID проектов для запроса результатов команды
+  const targetProjectIds = useMemo(() => {
+    if (!projects) return [];
+    
+    // Если бэкенд отдал участников, точечно фильтруем проекты, где юзер — лид
+    if (hasMembersData) {
+      return projects
+        .filter(p => p.members?.some(m => m.userId === user?.id && isLeadRole(m.role)))
+        .map(p => p.id);
+    }
+    
+    // ФОЛБЕК: Если members нет в ответе /project/all, берем ВСЕ проекты.
+    // Бэкенд сам разберется, где этот юзер является лидом, и вернет данные!
+    return projects.map(p => p.id);
+  }, [projects, user?.id, hasMembersData]);
+
+  const { data: allResults, isLoading: allLoading } = useQuery({
+    queryKey: ['results', 'all'],
+    queryFn: () => resultAPI.getAll(),
+    select: r => r.data,
+    enabled: isAdmin,
+  });
+
+  const { data: myResults, isLoading: myLoading } = useQuery({
+    queryKey: ['results', 'my'],
+    queryFn: () => resultAPI.getMy(),
+    select: r => r.data,
+    enabled: !isAdmin,
+  });
+
+  // Запрашиваем результаты по проектам
+  const teamResultsQueries = useQueries({
+    queries: targetProjectIds.map(projectId => ({
+      queryKey: ['results', 'project', projectId],
+      // Добавляем .catch(), чтобы 400/403 ошибки по "чужим" проектам не ломали приложение
+      queryFn: () => resultAPI.getByProject(projectId).catch(() => ({ data: [] })),
+      select: (r: any) => (r.data ?? []) as EvaluationResult[],
+      enabled: !isAdmin && targetProjectIds.length > 0,
+    })),
+  });
+
+  const isLoading = isAdmin
+    ? allLoading
+    : myLoading || teamResultsQueries.some(q => q.isLoading);
+
+  // Сборка и дедупликация итогового массива результатов
+  const results = useMemo(() => {
+    if (isAdmin) return allResults ?? [];
+    if (!myResults) return [];
+
+    const combined = [...myResults];
+    
+    // Безопасно подмешиваем результаты команды, если они загрузились
+    teamResultsQueries.forEach(q => {
+      if (q.data && Array.isArray(q.data)) {
+        q.data.forEach(r => {
+          if (!combined.some(c => c.id === r.id)) {
+            combined.push(r);
+          }
+        });
+      }
+    });
+    
+    return combined;
+  }, [isAdmin, allResults, myResults, teamResultsQueries]);
+
+  const sorted = useMemo(() => {
+    return [...results].sort((a, b) =>
+      sortBy === 'score'
+        ? b.finalScore - a.finalScore
+        : new Date(b.calculatedAt).getTime() - new Date(a.calculatedAt).getTime()
+    );
+  }, [results, sortBy]);
 
   const currentResult = selected
     ? sorted.find(r => r.id === selected.id) ?? selected
@@ -267,15 +363,16 @@ export const ResultsPage: React.FC = () => {
         result={currentResult}
         onBack={() => setSelected(null)}
         isAdmin={isAdmin}
+        users={users}
       />
     );
   }
 
-  const avgScore = results && results.length > 0
+  const avgScore = results.length > 0
     ? results.reduce((a, r) => a + r.finalScore, 0) / results.length
     : 0;
 
-  const best = results && results.length > 0
+  const best = results.length > 0
     ? Math.max(...results.map(r => r.finalScore))
     : 0;
 
@@ -289,7 +386,7 @@ export const ResultsPage: React.FC = () => {
       <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)', marginBottom: 20 }}>
         <div className="stat-card">
           <div className="stat-label">Результатов</div>
-          <div className="stat-value" style={{ color: 'var(--info)' }}>{results?.length ?? 0}</div>
+          <div className="stat-value" style={{ color: 'var(--info)' }}>{results.length}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Средний балл</div>
@@ -302,7 +399,7 @@ export const ResultsPage: React.FC = () => {
         <div className="stat-card">
           <div className="stat-label">Выше 8.0</div>
           <div className="stat-value" style={{ color: 'var(--accent)' }}>
-            {results?.filter(r => r.finalScore >= 8).length ?? 0}
+            {results.filter(r => r.finalScore >= 8).length}
           </div>
         </div>
       </div>
@@ -341,6 +438,10 @@ export const ResultsPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {sorted.map((r, i) => {
             const project = projects?.find(p => p.id === r.projectId);
+            const period = project?.reviewPeriods?.find(p => p.id === r.periodId);
+            const u = users.find(usr => usr.id === r.userId);
+            const userName = u ? `${u.firstName} ${u.lastName}` : r.userId.slice(0, 16) + '…';
+
             return (
               <div
                 key={r.id}
@@ -351,7 +452,6 @@ export const ResultsPage: React.FC = () => {
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  {/* Rank */}
                   {sortBy === 'score' && (
                     <div style={{
                       width: 32, height: 32, borderRadius: 8, flexShrink: 0,
@@ -364,20 +464,28 @@ export const ResultsPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Avatar */}
-                  <div className="avatar sm">{r.userId.slice(0, 2).toUpperCase()}</div>
+                  <div className="avatar sm">
+                    {u ? `${u.firstName[0]}${u.lastName[0]}` : r.userId.slice(0, 2).toUpperCase()}
+                  </div>
 
-                  {/* Info */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 2 }}>
-                      {project?.title ?? 'Проект'}
+                    <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 2, display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                      <span>{project?.title ?? 'Проект'}</span>
+                      {period && (
+                        <span style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 400 }}>
+                          ({new Date(period.startDate).toLocaleDateString('ru')} — {new Date(period.endDate).toLocaleDateString('ru')})
+                        </span>
+                      )}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', fontFamily: 'var(--mono)' }}>
-                      {r.userId.slice(0, 16)}… · {formatDate(r.calculatedAt)}
+                    <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+                      <span style={{ fontFamily: u ? 'inherit' : 'var(--mono)', color: 'var(--text2)', fontWeight: u ? 500 : 400 }}>
+                        {userName}
+                      </span>
+                      {' · '}
+                      <span>{formatDate(r.calculatedAt)}</span>
                     </div>
                   </div>
 
-                  {/* Score */}
                   <div style={{ width: 200, flexShrink: 0 }}>
                     <ScoreBar score={r.finalScore} />
                   </div>

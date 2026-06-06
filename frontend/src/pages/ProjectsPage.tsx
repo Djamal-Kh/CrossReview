@@ -236,6 +236,13 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
         select: r => r.data,
     });
 
+    // Получаем список всех пользователей из кэша/API для сопоставления Id -> Имя
+    const { data: users } = useQuery({
+        queryKey: ['users'],
+        queryFn: () => authAPI.getAll(),
+        select: r => r.data,
+    });
+
     const startMutation = useMutation({
         mutationFn: () => projectAPI.start(project.id),
         onSuccess: () => {
@@ -370,26 +377,48 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {membersData.map((m: any) => (
-                                        <tr key={m.userId}>
-                                            <td>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <div className="avatar sm">
-                                                        {m.userId.slice(0, 2).toUpperCase()}
+                                    {membersData.map((m: any) => {
+                                        // Ищем профиль пользователя по его Id
+                                        const memberUser = users?.find((u: User) => u.id === m.userId);
+                                        
+                                        // Формируем отображаемое имя (дефолт — Id, если данные еще не подгрузились)
+                                        const fullName = memberUser 
+                                            ? `${memberUser.firstName} ${memberUser.lastName}`
+                                            : m.userId;
+                                            
+                                        // Инициалы для аватара
+                                        const initials = memberUser && memberUser.firstName && memberUser.lastName
+                                            ? `${memberUser.firstName[0]}${memberUser.lastName[0]}`.toUpperCase()
+                                            : m.userId.slice(0, 2).toUpperCase();
+
+                                        return (
+                                            <tr key={m.userId}>
+                                                <td>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                                        <div className="avatar sm" style={{ fontWeight: 600 }}>
+                                                            {initials}
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                            <span style={{ fontWeight: 500, fontSize: 13 }}>
+                                                                {fullName}
+                                                            </span>
+                                                            {memberUser?.email && (
+                                                                <span style={{ fontSize: 11, color: 'var(--text3)' }}>
+                                                                    {memberUser.email}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text3)' }}>
-                                                        {m.userId}
+                                                </td>
+                                                <td>{roleBadge(m.role)}</td>
+                                                <td>
+                                                    <span className={`badge ${m.isActive ? 'badge-green' : 'badge-gray'}`}>
+                                                        {m.isActive ? 'Активен' : 'Неактивен'}
                                                     </span>
-                                                </div>
-                                            </td>
-                                            <td>{roleBadge(m.role)}</td>
-                                            <td>
-                                                <span className={`badge ${m.isActive ? 'badge-green' : 'badge-gray'}`}>
-                                                    {m.isActive ? 'Активен' : 'Неактивен'}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
@@ -461,7 +490,6 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
         </div>
     );
 };
-
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export const ProjectsPage: React.FC = () => {

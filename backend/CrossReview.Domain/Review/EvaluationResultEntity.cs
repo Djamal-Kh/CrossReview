@@ -36,13 +36,14 @@ public class EvaluationResultEntity
     public void Calculate(List<ReviewEntity> reviews, bool recalculate = false)
     {
         if (!reviews.Any())
-            throw new ValidationException("Результат уже был рассчитан");
+            throw new ValidationException("Не найдено ни одного ревью");
 
         if (CalculatedAt != default && !recalculate)
-            throw new ValidationException("Не найдено ни одного ревью");
+            throw new ValidationException("Результат уже был рассчитан");
         
         var completedReviews = reviews
-            .Where(r => r.Status == EnumReviewStatus.Submitted)
+            .Where(r => r.Status == EnumReviewStatus.Submitted 
+                        || r.Status == EnumReviewStatus.Closed)
             .ToList();
 
         if (!completedReviews.Any())
