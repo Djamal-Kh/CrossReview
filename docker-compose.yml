@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: crossreview-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: CrossReviewDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d CrossReviewDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    container_name: crossreview-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://0.0.0.0:5171
+      ConnectionStrings__CrossReview: Host=postgres;Port=5432;Database=CrossReviewDb;Username=postgres;Password=admin2;Pooling=true
+    ports:
+      - "5171:5171"  # Пробрасываем тот же порт
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    container_name: crossreview-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres_data:
