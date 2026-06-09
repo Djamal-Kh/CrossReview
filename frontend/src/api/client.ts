@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { User, LoginRequest, RegisterRequest, Project, Review, Template, EvaluationResult } from '../types/types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5171/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,

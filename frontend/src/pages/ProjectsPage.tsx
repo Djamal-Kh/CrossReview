@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectAPI, projectMembersAPI, reviewPeriodAPI, authAPI } from '../api/client';
+import { projectAPI, projectMembersAPI, reviewPeriodAPI, authAPI, reviewAPI, templateAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { Project, ReviewPeriod, User } from '../types/types';
+import { Project, ReviewPeriod, Template, User } from '../types/types';
 import { statusBadge, roleBadge } from '../utils/helpers'; // Возвращаем statusBadge для проекта
 import { ReviewPeriodStatus } from '../types/enums';
 
@@ -216,9 +216,11 @@ interface DetailProps {
 
 const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
     const qc = useQueryClient();
+    const { user } = useAuth();
     const [tab, setTab] = useState<'members' | 'periods'>('members');
     const [showAddPeriod, setShowAddPeriod] = useState(false);
     const [showAddMember, setShowAddMember] = useState(false);
+    const [selectedTemplateId, setSelectedTemplateId] = useState<Record<string, string>>({});
 
     // Загружаем полные данные проекта
     const { data: fullProject, isLoading: projectLoading } = useQuery({
@@ -242,6 +244,18 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
         queryFn: () => authAPI.getAll(),
         select: r => r.data,
     });
+
+    const isTeamLead = membersData?.some(
+        (m: any) => m.userId === user?.id && m.role === 'TeamLead' && m.isActive
+    );
+    const canManage = isAdmin || isTeamLead;
+
+    const { data: templates = [] } = useQuery({
+        queryKey: ['templates'],
+        queryFn: () => templateAPI.getAll(),
+        select: r => r.data as Template[],
+    });
+
 
     const startMutation = useMutation({
         mutationFn: () => projectAPI.start(project.id),
@@ -276,6 +290,25 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
             qc.invalidateQueries({ queryKey: ['project', project.id] });
         },
     });
+
+    const generateReviews = useMutation({
+        mutationFn: ({ periodId, templateId }: { periodId: string; templateId: string }) =>
+            reviewAPI.generate({ projectId: project.id, periodId, templateId }),
+        onSuccess: (res) => {
+            qc.invalidateQueries({ queryKey: ['reviews'] });
+            alert(`Создано ревью: ${res.data.created}`);
+        },
+    });
+
+    const removeMember = useMutation({
+        mutationFn: (userId: string) =>
+            projectMembersAPI.removeMember(project.id, userId),
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['members', project.id] });
+            qc.invalidateQueries({ queryKey: ['projects'] });
+        },
+    });
+
 
     if (projectLoading) {
         return (
@@ -355,7 +388,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                             <div className="card-title">Участники проекта</div>
                             <div className="card-sub">{membersData?.length ?? 0} человек</div>
                         </div>
-                        {isAdmin && (
+                        {canManage && (
                             <button className="btn btn-primary btn-sm" onClick={() => setShowAddMember(true)}>
                                 + Добавить
                             </button>
@@ -380,12 +413,12 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                     {membersData.map((m: any) => {
                                         // Ищем профиль пользователя по его Id
                                         const memberUser = users?.find((u: User) => u.id === m.userId);
-                                        
+
                                         // Формируем отображаемое имя (дефолт — Id, если данные еще не подгрузились)
-                                        const fullName = memberUser 
+                                        const fullName = memberUser
                                             ? `${memberUser.firstName} ${memberUser.lastName}`
                                             : m.userId;
-                                            
+
                                         // Инициалы для аватара
                                         const initials = memberUser && memberUser.firstName && memberUser.lastName
                                             ? `${memberUser.firstName[0]}${memberUser.lastName[0]}`.toUpperCase()
@@ -416,6 +449,20 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                                         {m.isActive ? 'Активен' : 'Неактивен'}
                                                     </span>
                                                 </td>
+                                                {canManage && ( 
+                                                    <td>
+                                                        <button
+                                                            className="btn btn-danger btn-sm"
+                                                            onClick={() => {
+                                                                if (confirm(`Удалить ${fullName} из проекта?`))
+                                                                    removeMember.mutate(m.userId);
+                                                            }}
+                                                            disabled={removeMember.isPending}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </td>
+                                                )}
                                             </tr>
                                         );
                                     })}
@@ -433,7 +480,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                             <div className="card-title">Периоды ревью</div>
                             <div className="card-sub">{currentProject.reviewPeriods?.length ?? 0} периодов</div>
                         </div>
-                        {isAdmin && (
+                        {canManage && (
                             <button className="btn btn-primary btn-sm" onClick={() => setShowAddPeriod(true)}>
                                 + Добавить
                             </button>
@@ -459,7 +506,7 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                             </div>
                                         </div>
                                     </div>
-                                    {isAdmin && (
+                                    {canManage && (
                                         <div style={{ display: 'flex', gap: 6 }}>
                                             {p.status === ReviewPeriodStatus.Draft && (
                                                 <button
@@ -471,13 +518,36 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
                                                 </button>
                                             )}
                                             {p.status === ReviewPeriodStatus.Active && (
-                                                <button
-                                                    className="btn btn-danger btn-sm"
-                                                    onClick={() => closePeriod.mutate(p.id)}
-                                                    disabled={closePeriod.isPending}
+                                                <><select
+                                                    value={selectedTemplateId[p.id] ?? ''}
+                                                    onChange={e => setSelectedTemplateId(prev => ({ ...prev, [p.id]: e.target.value }))}
+                                                    style={{
+                                                        fontSize: 12, padding: '3px 8px', background: 'var(--bg2)',
+                                                        border: '1px solid var(--border2)', borderRadius: 6, color: 'var(--text)'
+                                                    }}
                                                 >
-                                                    ✕ Закрыть
-                                                </button>
+                                                    <option value="">Шаблон…</option>
+                                                    {templates
+                                                        .filter(t => t.projectId === project.id && t.isActive)
+                                                        .map(t => (
+                                                            <option key={t.id} value={t.id}>{t.title}</option>
+                                                        ))}
+                                                </select><button
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => generateReviews.mutate({
+                                                        periodId: p.id,
+                                                        templateId: selectedTemplateId[p.id]
+                                                    })}
+                                                    disabled={!selectedTemplateId[p.id] || generateReviews.isPending}
+                                                >
+                                                        ⚡ Сгенерировать ревью
+                                                    </button><button
+                                                        className="btn btn-danger btn-sm"
+                                                        onClick={() => closePeriod.mutate(p.id)}
+                                                        disabled={closePeriod.isPending}
+                                                    >
+                                                        ✕ Закрыть
+                                                    </button></>
                                             )}
                                         </div>
                                     )}
@@ -495,6 +565,8 @@ const ProjectDetail: React.FC<DetailProps> = ({ project, isAdmin, onBack }) => {
 export const ProjectsPage: React.FC = () => {
     const { user } = useAuth();
     const isAdmin = user?.role === 'Admin';
+
+
     const [selected, setSelected] = useState<Project | null>(null);
     const [showCreate, setShowCreate] = useState(false);
     const [filter, setFilter] = useState<'all' | 'active' | 'closed'>('all');
@@ -509,6 +581,12 @@ export const ProjectsPage: React.FC = () => {
     const currentProject = selected
         ? projects?.find(p => p.id === selected.id) ?? selected
         : null;
+
+    const isTeamLead = currentProject?.members?.some(
+        m => m.userId === user?.id && m.role === 'TeamLead'
+    );
+
+    const canManage = isAdmin || isTeamLead;
 
     const filtered = (projects ?? []).filter(p => {
         if (filter === 'active' && !p.status) return false;

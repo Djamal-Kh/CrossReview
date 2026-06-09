@@ -1,4 +1,6 @@
-﻿using CrossReview.Application.Project.UseCases.AssignNewProjectMember;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using CrossReview.Application.Project.UseCases.AssignNewProjectMember;
 using CrossReview.Application.Project.UseCases.ChangeProjectMemberRole;
 using CrossReview.Application.Project.UseCases.DeactivateProjectMember;
 using CrossReview.Application.Project.UseCases.GetProjectMemberById;
@@ -39,14 +41,21 @@ public class ProjectMemberController : ControllerBase
 
     [HttpPost]
     [Route("add")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Add(
         Guid userId,
         EnumProjectRole role,
         Guid projectId,
         CancellationToken cancellationToken)
     {
-        var request = new AssignNewProjectMemberRequest(userId, role, projectId);
+        var currentUserId = GetCurrentUserId();
+    
+        if (currentUserId is null)
+            return Unauthorized();
+
+        var isAdmin = User.IsInRole("Admin");
+        
+        var request = new AssignNewProjectMemberRequest(userId, role, projectId, currentUserId.Value, isAdmin);
 
         var result = await _assignNewProjectMemberUseCase.Execute(request, cancellationToken);
         
@@ -55,7 +64,7 @@ public class ProjectMemberController : ControllerBase
         
         return Ok(result.Value);
     }
-
+    
     [HttpGet]
     [Route("project/{projectId:guid}")]
     [Authorize]
@@ -130,13 +139,20 @@ public class ProjectMemberController : ControllerBase
 
     [HttpDelete]
     [Route("remove-member")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Remove(
         Guid projectId,
         Guid userId,
         CancellationToken cancellationToken)
     {
-        var request = new RemoveProjectMemberRequest(projectId, userId);
+        var currentUserId = GetCurrentUserId();
+    
+        if (currentUserId is null)
+            return Unauthorized();
+
+        var isAdmin = User.IsInRole("Admin");
+        
+        var request = new RemoveProjectMemberRequest(projectId, userId, currentUserId.Value, isAdmin);
 
         var result = await _removeProjectMemberUseCase.Execute(request, cancellationToken);
 
@@ -144,5 +160,13 @@ public class ProjectMemberController : ControllerBase
             return BadRequest(result.Error);
         
         return Ok(result.Value);
+    }
+    
+    private Guid? GetCurrentUserId()
+    {
+        var sub = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                  ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    
+        return Guid.TryParse(sub, out var id) ? id : null;
     }
 }

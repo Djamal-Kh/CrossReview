@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using CrossReview.Domain.Project;
+using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.Common.Extensions;
@@ -33,6 +34,15 @@ public class AssignNewProjectMemberUseCase
         
         if (project is null)
             return GeneralErrors.NotFound(request.ProjectId).ToErrors();
+        
+        if (!request.IsAdmin)
+        {
+            var requester = project.Members
+                .FirstOrDefault(m => m.UserId == request.RequestedByUserId && m.IsActive);
+
+            if (requester is null || requester.Role != EnumProjectRole.TeamLead)
+                return GeneralErrors.ValueIsInvalid("Недостаточно прав").ToErrors();
+        }
         
         var memberId = project.AssignEmployeeToProject(request.UserId, request.Role);
 

@@ -22,8 +22,4 @@
       <ProjectReference Include="..\Crossreview.Infrastructure.Identity\Crossreview.Infrastructure.Identity.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Migrations\" />
-    </ItemGroup>
-
 </Project>
