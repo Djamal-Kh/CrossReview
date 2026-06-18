@@ -4,4 +4,4 @@ public record AddAnswerRequest(
     Guid ReviewId,
     Guid QuestionId,
     int Score,
-    string Comment);
+    string? Comment);

@@ -115,7 +115,7 @@ public class ReviewController : ControllerBase
         Guid reviewId, 
         Guid questionId,
         int score,
-        string comment,
+        string? comment,
         CancellationToken cancellationToken)
     {
         var request = new AddAnswerRequest(reviewId, questionId, score, comment);

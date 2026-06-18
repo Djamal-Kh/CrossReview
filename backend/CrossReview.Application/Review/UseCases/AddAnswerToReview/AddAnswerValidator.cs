@@ -30,7 +30,6 @@ public class AddAnswerValidator : AbstractValidator<AddAnswerRequest>
             .MaximumLength(1000)
             .WithError(GeneralErrors.ValueTooLong(1000, nameof(AddAnswerRequest.Comment)))
             .MaximumLength(500)
-            .When(x => string.IsNullOrWhiteSpace(x.Comment))
             .WithError(GeneralErrors.ValueTooLong(500, nameof(AddAnswerRequest.Comment)));
         
         // Проверка, что комментарий не состоит только из пробелов

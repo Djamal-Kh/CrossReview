@@ -103,7 +103,7 @@ public class ReviewEntity
             throw new ValidationException("Нельзя редактировать ревью");
     }
     
-    public void AddAnswer(Guid questionId, int score, string comment)
+    public void AddAnswer(Guid questionId, int score, string? comment)
     {
         EnsureEditable();
         

@@ -34,7 +34,7 @@ public class ReviewPeriodController : ControllerBase
     
     [HttpPost]
     [Route("create")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Create(
         Guid projectId,
         DateTime startDate,
@@ -56,7 +56,7 @@ public class ReviewPeriodController : ControllerBase
 
     [HttpPatch]
     [Route("close")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Close(
         Guid projectId,
         Guid periodId,
@@ -74,7 +74,7 @@ public class ReviewPeriodController : ControllerBase
     
     [HttpPatch]
     [Route("archive")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Archive(
         Guid projectId,
         Guid periodId,
@@ -92,7 +92,7 @@ public class ReviewPeriodController : ControllerBase
     
     [HttpPatch]
     [Route("update")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> UpdateDates(
         Guid projectId,
         Guid periodId,
@@ -115,7 +115,7 @@ public class ReviewPeriodController : ControllerBase
 
     [HttpPatch]
     [Route("activate")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public async Task<IActionResult> Activate(
         Guid projectId,
         Guid periodId,

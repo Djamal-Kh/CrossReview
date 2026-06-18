@@ -4,7 +4,7 @@ namespace CrossReview.Domain.Review;
 
 public class ReviewAnswer
 {
-    private ReviewAnswer(Guid reviewId, Guid questionId, int score, string comment)
+    private ReviewAnswer(Guid reviewId, Guid questionId, int score, string? comment)
     {
         if (questionId == Guid.Empty)
             throw new ValidationException($"Поле {nameof(QuestionId)} не может быть пустым");
@@ -27,7 +27,7 @@ public class ReviewAnswer
     public int Score { get; private set; }
     public string? Comment { get; private set; }
 
-    public static ReviewAnswer Create(Guid reviewId, Guid questionId,int score, string comment)
+    public static ReviewAnswer Create(Guid reviewId, Guid questionId,int score, string? comment)
     {
         return new ReviewAnswer(reviewId, questionId, score, comment);
     }
@@ -46,12 +46,15 @@ public class ReviewAnswer
         Comment = string.Empty;
     }
     
-    private void Validate(int score, string comment)
+    private void Validate(int score, string? comment)
     {
-        if (comment.Length > 1000)
-            throw new ValidationException("Комментарий должен содержать не более 1000 символов");
-
         if (score > 10 || score < 1)
             throw new ValidationException("Неверная оценка");
+        
+        if (comment is null)
+            return;
+        
+        if (comment.Length > 1000)
+            throw new ValidationException("Комментарий должен содержать не более 1000 символов");
     }
 }
